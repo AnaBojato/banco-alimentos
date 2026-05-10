@@ -7,10 +7,7 @@ function StaffAccess() {
   const navigate = useNavigate();
 
   return (
-    <div
-      className="staff-card"
-      onClick={() => navigate("/login")}
-    >
+    <button className="staff-card">
 
       <div className="staff-info">
 
@@ -33,7 +30,7 @@ function StaffAccess() {
 
       </div>
 
-    </div>
+    </button>
   );
 }
 
