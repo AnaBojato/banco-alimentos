@@ -1,26 +1,20 @@
 import "../styles/welcome.css";
-import { Gift, Shield } from "lucide-react";
+
+import { Gift } from "lucide-react";
+
+import Logo from "../components/Logo";
+import StaffAccess from "../components/StaffAccess";
 
 function Welcome() {
   return (
     <div className="main-page">
       <div className="main-container">
 
-        {/* Logo */}
-        <div className="main-logo">
-          <div className="main-logo-icon">
-            <Gift size={30} />
-          </div>
-
-          <h1 className="main-brand">The Steward</h1>
-
-          <p className="main-subtitle">
-            Sistema Inventario Banco Alimentos
-          </p>
-        </div>
+        <Logo />
 
         {/* Card principal */}
         <div className="main-card">
+
           <h2 className="main-title">
             Ayuda a alimentar a nuestra comunidad
           </h2>
@@ -38,24 +32,10 @@ function Welcome() {
           <p className="main-note">
             SIN REGISTROS - SIN COMPLICACIONES
           </p>
+
         </div>
 
-        {/* Acceso personal */}
-        <div className="staff-card">
-          <div className="staff-info">
-            <div>
-              <h3 className="staff-title">
-                Acceso para Personal
-              </h3>
-
-              <p className="staff-subtitle">
-                Solo administradores
-              </p>
-            </div>
-
-            <Shield size={22} className="staff-icon" />
-          </div>
-        </div>
+        <StaffAccess />
 
       </div>
     </div>
