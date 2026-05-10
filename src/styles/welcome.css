@@ -92,7 +92,7 @@
   color: var(--gray-500);
 }
 
-/* CARD */
+/* MAIN CARD */
 .main-card {
   background-color: var(--white);
 
@@ -128,7 +128,7 @@
   margin-bottom: 24px;
 }
 
-/* BUTTON */
+/* DONATE BUTTON */
 .donate-btn {
   width: 100%;
 
@@ -166,6 +166,10 @@
   box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
 }
 
+.donate-btn:active {
+  transform: scale(0.98);
+}
+
 /* NOTE */
 .main-note {
   font-size: 11px;
@@ -177,8 +181,10 @@
   letter-spacing: 1px;
 }
 
-/* STAFF */
+/* STAFF BUTTON CARD */
 .staff-card {
+  width: 100%;
+
   background-color: var(--white);
 
   border: 1px solid var(--gray-200);
@@ -186,6 +192,24 @@
   border-radius: var(--radius);
 
   padding: 20px;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  text-align: left;
+
+  outline: none;
+}
+
+.staff-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow: var(--shadow-md);
+}
+
+.staff-card:active {
+  transform: scale(0.98);
 }
 
 .staff-info {

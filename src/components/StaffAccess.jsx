@@ -2,7 +2,8 @@ import { Shield } from "lucide-react";
 
 function StaffAccess() {
   return (
-    <div className="staff-card">
+    <button className="staff-card">
+
       <div className="staff-info">
 
         <div>
@@ -18,7 +19,8 @@ function StaffAccess() {
         <Shield size={22} className="staff-icon" />
 
       </div>
-    </div>
+
+    </button>
   );
 }
 
