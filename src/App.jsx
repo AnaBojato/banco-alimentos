@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
+import Inicio from "./pages/Inicio";
 
 function App() {
   return (
@@ -15,6 +16,11 @@ function App() {
       <Route
         path="/login"
         element={<Login />}
+      />
+
+      <Route
+        path="/inicio"
+        element={<Inicio />}
       />
 
     </Routes>

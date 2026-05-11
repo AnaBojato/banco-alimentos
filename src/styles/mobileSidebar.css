@@ -1,0 +1,36 @@
+.mobile-overlay{
+  position:fixed;
+  inset:0;
+
+  background:rgba(0,0,0,0.45);
+
+  z-index:90;
+}
+
+.mobile-sidebar{
+  position:fixed;
+
+  top:0;
+  left:-100%;
+
+  width:280px;
+  height:100vh;
+
+  background:white;
+
+  z-index:100;
+
+  transition:0.3s;
+}
+
+.mobile-sidebar.open{
+  left:0;
+}
+
+@media(min-width:769px){
+
+  .mobile-sidebar{
+    display:none;
+  }
+
+}

@@ -1,0 +1,56 @@
+.dashboard-card{
+  background:white;
+
+  border:1px solid #e5e7eb;
+
+  border-radius:18px;
+
+  padding:24px;
+
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+.dashboard-card-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.dashboard-card-icon{
+  width:50px;
+  height:50px;
+
+  border-radius:14px;
+
+  background:#dcfce7;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:#166534;
+}
+
+.dashboard-card-badge{
+  background:#dcfce7;
+
+  color:#166534;
+
+  font-size:12px;
+
+  padding:8px 12px;
+
+  border-radius:999px;
+}
+
+.dashboard-card-title{
+  color:#6b7280;
+  font-size:14px;
+}
+
+.dashboard-card-value{
+  font-size:36px;
+  font-weight:700;
+}

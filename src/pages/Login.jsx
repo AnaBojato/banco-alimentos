@@ -14,7 +14,7 @@ import "../styles/Login.css";
 function Login() {
 
   const [formData, setFormData] = useState({
-    email: "",
+    correo: "",
     password: "",
     remember: false,
   });
@@ -62,7 +62,7 @@ function Login() {
           },
 
           body: JSON.stringify({
-            email: formData.email,
+            correo: formData.email,
             password: formData.password,
           }),
         }
