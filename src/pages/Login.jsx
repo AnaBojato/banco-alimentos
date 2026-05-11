@@ -15,7 +15,7 @@ import "../styles/Login.css";
 function Login() {
 
   const [formData, setFormData] = useState({
-    email: "",
+    correo: "",
     password: "",
     remember: false,
   });
@@ -56,8 +56,16 @@ function Login() {
       const response = await api.post(
         "/auth/login",
         {
-          email: formData.email,
-          password: formData.password,
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            correo: formData.email,
+            password: formData.password,
+          }),
         }
       );
 
