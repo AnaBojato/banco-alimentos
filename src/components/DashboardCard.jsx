@@ -1,10 +1,10 @@
 import "../styles/dashboardCard.css";
 
-function DashboardCard({ title, value, subtitle, icon, badgeClass = "" }) {
+function DashboardCard({ title, value, subtitle, icon, badgeClass = "", iconClass = "" }) {
   return (
     <div className="dashboard-card">
       <div className="dashboard-card-top">
-        <div className="dashboard-card-icon">
+        <div className={`dashboard-card-icon ${iconClass}`}>
           {icon}
         </div>
         <span className={`dashboard-card-badge ${badgeClass}`}>

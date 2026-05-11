@@ -41,6 +41,18 @@
   font-size:13px;
 }
 
+.sidebar-logo-icon{
+  width:52px;
+  height:52px;
+  border-radius:14px;
+  background:#166534;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  flex-shrink:0;
+}
+
 .sidebar-nav{
   display:flex;
   flex-direction:column;

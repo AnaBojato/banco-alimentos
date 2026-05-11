@@ -56,3 +56,44 @@
   color:#111827;
   margin:0;
 }
+
+.dashboard-card-icon{
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  background:#dcfce7;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#166534;
+}
+
+/* Variantes de color */
+.dashboard-card-icon.orange{
+  background:#fff7ed;
+  color:#ea580c;
+}
+
+.dashboard-card-icon.blue{
+  background:#eff6ff;
+  color:#2563eb;
+}
+
+.dashboard-card-badge{
+  background:#dcfce7;
+  color:#166534;
+  font-size:12px;
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:500;
+}
+
+.dashboard-card-badge.warning{
+  background:#fff7ed;
+  color:#ea580c;
+}
+
+.dashboard-card-badge.blue{
+  background:#eff6ff;
+  color:#2563eb;
+}

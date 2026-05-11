@@ -57,3 +57,69 @@
   color:#166534;
   font-weight:600;
 }
+
+.quick-card{
+  border:1px solid #e5e7eb;
+  background:white;
+  border-radius:18px;
+  padding:24px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:14px;
+  cursor:pointer;
+  transition:0.2s;
+  text-align:left;
+  width:100%;
+}
+
+.quick-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+
+.quick-icon{
+  width:52px;
+  height:52px;
+  border-radius:14px;
+  background:#dcfce7;
+  color:#166534;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.quick-icon.orange{
+  background:#fff7ed;
+  color:#ea580c;
+}
+
+.quick-icon.olive{
+  background:#f0fdf4;
+  color:#4d7c0f;
+}
+
+.quick-card h3{
+  font-size:18px;
+  font-weight:700;
+  color:#111827;
+}
+
+.quick-card p{
+  color:#6b7280;
+  font-size:14px;
+  line-height:1.6;
+}
+
+.quick-action{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#166534;
+  font-weight:600;
+  font-size:14px;
+}
+
+.quick-action.orange{
+  color:#ea580c;
+}

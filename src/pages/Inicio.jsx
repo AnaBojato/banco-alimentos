@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { Package, TriangleAlert, HandHeart, Truck, Calendar, SlidersHorizontal } from "lucide-react";
+import {
+  Package, TriangleAlert, HandHeart, Truck,
+  Calendar, SlidersHorizontal,
+} from "lucide-react";
 
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
@@ -63,7 +66,7 @@ function Inicio() {
               </p>
             </div>
             <div className="dashboard-date">
-              <Calendar size={16} />
+              <Calendar size={15} />
               {today}
             </div>
           </div>
@@ -74,12 +77,15 @@ function Inicio() {
               value={stats.totalProductos}
               subtitle="+12% vs mes anterior"
               icon={<Package size={22} />}
+              iconClass=""
+              badgeClass=""
             />
             <DashboardCard
               title="Próximos a Vencer"
               value={stats.productosPorVencer}
               subtitle="Atención requerida"
               icon={<TriangleAlert size={22} />}
+              iconClass="orange"
               badgeClass="warning"
             />
             <DashboardCard
@@ -87,6 +93,8 @@ function Inicio() {
               value={stats.totalDonaciones}
               subtitle="Meta: 90%"
               icon={<HandHeart size={22} />}
+              iconClass="blue"
+              badgeClass="blue"
             />
           </div>
 
@@ -120,6 +128,7 @@ function Inicio() {
                 action="Revisar"
                 icon={<TriangleAlert size={22} />}
                 route="/vencimientos"
+                iconClass="orange"
               />
               <QuickActionCard
                 title="Ver Entregas"
@@ -127,6 +136,7 @@ function Inicio() {
                 action="Rastreo"
                 icon={<Truck size={22} />}
                 route="/entregas"
+                iconClass="olive"
               />
             </div>
           </div>

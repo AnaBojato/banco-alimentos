@@ -4,6 +4,7 @@ import {
   Truck,
   Users,
   LogOut,
+  HeartHandshake,
 } from "lucide-react";
 
 import "../styles/sidebar.css";
@@ -13,7 +14,9 @@ function Sidebar({ inMobile = false }) {
     <aside className={`sidebar ${inMobile ? "sidebar-mobile-inner" : ""}`}>
       <div>
         <div className="sidebar-logo">
-          <div className="sidebar-logo-icon">🍎</div>
+          <div className="sidebar-logo-icon">
+            <HeartHandshake size={26} />
+          </div>
           <div>
             <h2>Banco de Alimentos</h2>
             <p>Administrador</p>
