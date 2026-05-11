@@ -1,38 +1,19 @@
 import "../styles/dashboardCard.css";
 
-function DashboardCard({
-  title,
-  value,
-  subtitle,
-  icon,
-}) {
-
+function DashboardCard({ title, value, subtitle, icon, badgeClass = "" }) {
   return (
-
     <div className="dashboard-card">
-
       <div className="dashboard-card-top">
-
         <div className="dashboard-card-icon">
           {icon}
         </div>
-
-        <span className="dashboard-card-badge">
+        <span className={`dashboard-card-badge ${badgeClass}`}>
           {subtitle}
         </span>
-
       </div>
-
-      <p className="dashboard-card-title">
-        {title}
-      </p>
-
-      <h2 className="dashboard-card-value">
-        {value}
-      </h2>
-
+      <p className="dashboard-card-title">{title}</p>
+      <h2 className="dashboard-card-value">{value}</h2>
     </div>
-
   );
 }
 
