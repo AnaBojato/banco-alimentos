@@ -1,0 +1,320 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.donation-page {
+  min-height: 100vh;
+  background: #f5f7f6;
+}
+
+/* HEADER */
+
+.donation-header {
+  height: 70px;
+
+  background: white;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 40px;
+}
+
+.donation-header-logo {
+  font-size: 22px;
+  font-weight: 700;
+
+  color: #2e7d32;
+}
+
+.donation-nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.donation-nav-link {
+  background: none;
+  border: none;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  color: #6b7280;
+}
+
+.donation-nav-link.active {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+/* CONTENT */
+
+.donation-content {
+  max-width: 1300px;
+
+  margin: 0 auto;
+
+  padding: 40px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+
+  transform: scale(0.85);
+
+  transform-origin: top center;
+}
+
+/* LEFT */
+
+.donation-page-title {
+  font-size: 56px;
+  line-height: 1;
+
+  color: #1b5e20;
+
+  margin-bottom: 24px;
+}
+
+.donation-page-description {
+  font-size: 22px;
+  line-height: 1.6;
+
+  color: #4b5563;
+
+  margin-bottom: 30px;
+}
+
+.donation-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  margin-bottom: 30px;
+}
+
+.benefit-item {
+  display: flex;
+  gap: 16px;
+
+  background: #ECEEEE;
+
+  padding: 18px;
+
+  border-radius: 8px;
+}
+
+.benefit-icon {
+  width: 45px;
+  height: 45px;
+
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.benefit-icon.green {
+  background: #9DF197;
+  color: #005C15;
+}
+
+.benefit-icon.blue {
+  background: #D5E8CF;
+  color: #465643;
+}
+
+.benefit-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.benefit-title {
+  font-size: 15px;
+  font-weight: 700;
+
+  margin-bottom: 6px;
+}
+
+.benefit-description {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.donation-image img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.image-caption {
+  display: block;
+
+  margin-top: 10px;
+
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* RIGHT */
+
+.donation-form-section {
+    background: white;
+    padding: 35px 35px 12px 35px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.donation-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 500;
+  color: #5B6061;
+  padding-left: 3px;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+
+  height: 50px;
+
+  border: 1px solid #ECEEEE;
+
+  border-radius: 4px;
+
+  padding: 0 16px;
+
+  font-size: 13px;
+
+  background-color: #ECEEEE;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-icon {
+  position: absolute;
+
+  right: 16px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  pointer-events: none;
+
+  color: #6b7280;
+}
+
+.form-select {
+  appearance: none;
+}
+
+.form-hint {
+  margin-top: 8px;
+
+  font-size: 13px;
+
+  color: #6b7280;
+}
+
+.submit-donation-btn {
+  width: 100%;
+
+  height: 55px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: linear-gradient(
+    90deg,
+    #1b5e20,
+    #81c784
+  );
+
+  color: white;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  transition: 0.2s;
+}
+
+.submit-donation-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+
+  .donation-content {
+    grid-template-columns: 1fr;
+  }
+
+  .donation-page-title {
+    font-size: 42px;
+  }
+}
+
+@media (max-width: 600px) {
+
+  .donation-header {
+    padding: 0 20px;
+  }
+
+  .donation-content {
+    padding: 20px;
+  }
+
+  .donation-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .donation-page-title {
+    font-size: 34px;
+  }
+}
+
+.input-error {
+  border: 1px solid #dc2626 !important;
+}
+
+.error-text {
+  margin-top: 6px;
+
+  color: #dc2626;
+
+  font-size: 13px;
+
+  font-weight: 500;
+}

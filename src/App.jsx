@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
+import Donation from "./pages/Donation";
 
 function App() {
   return (
@@ -10,6 +11,11 @@ function App() {
       <Route
         path="/"
         element={<Welcome />}
+      />
+
+      <Route
+        path="/donation"
+        element={<Donation />}
       />
 
       <Route
