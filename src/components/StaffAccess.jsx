@@ -5,10 +5,12 @@ function StaffAccess() {
   const navigate = useNavigate();
 
   return (
+
     <button
       className="staff-card"
       onClick={() => navigate("/login")}
     >
+
       <div className="staff-info">
         <div>
           <h3 className="staff-title">
@@ -21,6 +23,7 @@ function StaffAccess() {
         <Shield size={22} className="staff-icon" />
       </div>
     </button>
+
   );
 }
 

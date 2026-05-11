@@ -1,4 +1,5 @@
 import { useState } from "react";
+import api from "../api/api";
 
 import {
   Mail,
@@ -52,8 +53,8 @@ function Login() {
 
     try {
 
-      const response = await fetch(
-        "http://localhost:3000/api/auth/login",
+      const response = await api.post(
+        "/auth/login",
         {
           method: "POST",
 
@@ -68,16 +69,7 @@ function Login() {
         }
       );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.message ||
-          "Error al iniciar sesión"
-        );
-
-      }
+      const data = response.data;
 
       localStorage.setItem(
         "token",
@@ -90,7 +82,10 @@ function Login() {
 
     } catch (err) {
 
-      setError(err.message);
+      setError(
+        err.response?.data?.message ||
+        "Error al iniciar sesión"
+      );
 
     } finally {
 

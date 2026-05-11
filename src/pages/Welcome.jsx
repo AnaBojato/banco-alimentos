@@ -1,11 +1,15 @@
 import "../styles/welcome.css";
 
 import { Gift } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import Logo from "../components/Logo";
 import StaffAccess from "../components/StaffAccess";
 
 function Welcome() {
+
+  const navigate = useNavigate();
+
   return (
     <div className="main-page">
       <div className="main-container">
@@ -24,9 +28,9 @@ function Welcome() {
             Tu generosidad marca la diferencia hoy mismo.
           </p>
 
-          <button className="donate-btn">
+          <button className="donate-btn" onClick={() => navigate("/donation")}>
             <Gift size={18} />
-            Hacer una Donacion Ahora
+            Hacer una Donación Ahora
           </button>
 
           <p className="main-note">
