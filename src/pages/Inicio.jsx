@@ -4,11 +4,11 @@ import {
   Calendar, SlidersHorizontal,
 } from "lucide-react";
 
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
-import DashboardCard from "../components/DashboardCard";
-import QuickActionCard from "../components/QuickActionCard";
-import MobileSidebar from "../components/MobileSidebar";
+import Sidebar from "../components/Sidebar/Sidebar";
+import Navbar from "../components/Navbar/Navbar";
+import DashboardCard from "../components/DashboardCard/DashboardCard";
+import QuickActionCard from "../components/QuickActionCard/QuickActionCard";
+import MobileSidebar from "../components/MobileSideBar/MobileSidebar";
 
 import "../styles/inicio.css";
 

@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import "../styles/quickActionCard.css";
+import "../QuickActionCard/quickActionCard.css";
 
 function QuickActionCard({ title, action, icon, route, iconClass = "" }) {
   const navigate = useNavigate();

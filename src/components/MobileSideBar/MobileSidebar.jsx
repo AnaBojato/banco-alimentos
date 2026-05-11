@@ -1,5 +1,6 @@
-import Sidebar from "./Sidebar";
-import "../styles/mobileSidebar.css";
+import Sidebar from "../Sidebar/Sidebar";
+import "../MobileSideBar/mobileSidebar.css";
+
 
 function MobileSidebar({ isOpen, onClose }) {
   return (

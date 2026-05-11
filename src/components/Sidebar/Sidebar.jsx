@@ -7,7 +7,7 @@ import {
   HeartHandshake,
 } from "lucide-react";
 
-import "../styles/sidebar.css";
+import "../Sidebar/sidebar.css";
 
 function Sidebar({ inMobile = false }) {
   return (

@@ -1,4 +1,4 @@
-import "../styles/dashboardCard.css";
+import "../DashboardCard/dashboardCard.css";
 
 function DashboardCard({ title, value, subtitle, icon, badgeClass = "", iconClass = "" }) {
   return (

@@ -3,8 +3,8 @@ import "../styles/welcome.css";
 import { Gift } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-import Logo from "../components/Logo";
-import StaffAccess from "../components/StaffAccess";
+import Logo from "../components/Logo/Logo";
+import StaffAccess from "../components/StaffAccess/StaffAccess";
 
 function Welcome() {
 

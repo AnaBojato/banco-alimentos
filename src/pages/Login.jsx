@@ -7,8 +7,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-import Logo from "../components/Logo";
-import BackButton from "../components/BackButton";
+import Logo from "../components/Logo/Logo";
+import BackButton from "../components/BackButton/BackButton";
 
 import "../styles/Login.css";
 

@@ -1,5 +1,5 @@
 import { Bell, CircleHelp, Menu, Search } from "lucide-react";
-import "../styles/navbar.css";
+import "../Navbar/navbar.css";
 
 function Navbar({ openSidebar }) {
   return (
