@@ -100,7 +100,7 @@ function Inicio() {
 
           <div className="quick-section">
             <div className="quick-header">
-              <h2>Reportes Rápidos</h2>
+              <h2>Accesos Rápidos</h2>
               <button className="filter-btn">
                 <SlidersHorizontal size={15} />
                 Filtros
@@ -109,30 +109,26 @@ function Inicio() {
 
             <div className="quick-grid">
               <QuickActionCard
-                title="Ver Donaciones"
-                description="Historial detallado de entradas y donantes activos."
+                title="Donaciones"
                 action="Explorar"
                 icon={<HandHeart size={22} />}
                 route="/donaciones"
               />
               <QuickActionCard
-                title="Ver Inventario"
-                description="Consulta el stock real disponible en almacén central."
+                title="Inventario"
                 action="Gestionar"
                 icon={<Package size={22} />}
                 route="/inventario"
               />
               <QuickActionCard
-                title="Ver Vencimientos"
-                description="Listado de productos con caducidad próxima."
+                title="Caducados"
                 action="Revisar"
                 icon={<TriangleAlert size={22} />}
                 route="/vencimientos"
                 iconClass="orange"
               />
               <QuickActionCard
-                title="Ver Entregas"
-                description="Control de logística y distribución."
+                title="Entregas"
                 action="Rastreo"
                 icon={<Truck size={22} />}
                 route="/entregas"

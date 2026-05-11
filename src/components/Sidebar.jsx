@@ -42,11 +42,6 @@ function Sidebar({ inMobile = false }) {
           </button>
         </nav>
       </div>
-
-      <button className="logout-btn">
-        <LogOut size={18} />
-        Cerrar Sesión
-      </button>
     </aside>
   );
 }

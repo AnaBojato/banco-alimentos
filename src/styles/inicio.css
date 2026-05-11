@@ -106,32 +106,56 @@
   }
 }
 
+/* ── MOBILE ── */
 @media(max-width:768px){
+
   .dashboard-content{
-    padding:20px 16px;
+    padding:16px;
   }
 
   .dashboard-header{
     flex-direction:column;
     align-items:flex-start;
-    gap:16px;
-  }
-
-  .dashboard-cards{
-    grid-template-columns:1fr;
-  }
-
-  .quick-grid{
-    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:16px;
   }
 
   .dashboard-title{
-    font-size:26px;
+    font-size:22px;
   }
-}
 
-@media(max-width:480px){
+  .dashboard-subtitle{
+    font-size:13px;
+  }
+
+  .dashboard-date{
+    font-size:13px;
+    padding:8px 12px;
+  }
+
+  /* Tarjetas estadísticas: fila horizontal compacta */
+  .dashboard-cards{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  /* Ocultar filtros en mobile */
+  .filter-btn{
+    display:none;
+  }
+
+  /* Accesos rápidos: grid 2x2 */
   .quick-grid{
-    grid-template-columns:1fr;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+
+  .quick-section{
+    margin-top:24px;
+  }
+
+  .quick-header h2{
+    font-size:18px;
   }
 }

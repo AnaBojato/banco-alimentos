@@ -11,8 +11,11 @@ function DashboardCard({ title, value, subtitle, icon, badgeClass = "", iconClas
           {subtitle}
         </span>
       </div>
-      <p className="dashboard-card-title">{title}</p>
-      <h2 className="dashboard-card-value">{value}</h2>
+
+      <div className="dashboard-card-body">
+        <p className="dashboard-card-title">{title}</p>
+        <h2 className="dashboard-card-value">{value}</h2>
+      </div>
     </div>
   );
 }
