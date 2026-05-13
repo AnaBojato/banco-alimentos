@@ -1,0 +1,178 @@
+import { useEffect, useState } from "react";
+
+import { UserPlus } from "lucide-react";
+
+import Sidebar from "../components/Sidebar/Sidebar";
+import Navbar from "../components/Navbar/Navbar";
+import MobileSidebar from "../components/MobileSidebar/MobileSidebar";
+import CustomSelect from "../components/CustomSelect/CustomSelect";
+
+import "../styles/usuarios.css";
+
+const ROL_OPTIONS = [
+  { value: "voluntario",    label: "Voluntario"    },
+  { value: "administrador", label: "Administrador" },
+];
+
+function Usuarios() {
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [usuarios,    setUsuarios]    = useState([]);
+  const [loading,     setLoading]     = useState(false);
+  const [error,       setError]       = useState("");
+
+  const [formData, setFormData] = useState({
+    nombre_completo: "",
+    correo:          "",
+    telefono:        "",
+    rol:             "voluntario",
+    password:        "",
+  });
+
+  const token = localStorage.getItem("token");
+
+  const fetchUsuarios = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/usuarios", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setUsuarios(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => { fetchUsuarios(); }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      let endpoint = "http://localhost:3000/api/usuarios";
+      let bodyData = {
+        nombre_completo: formData.nombre_completo,
+        correo:          formData.correo,
+        telefono:        formData.telefono,
+        rol:             formData.rol,
+      };
+      if (formData.rol === "administrador") {
+        endpoint          = "http://localhost:3000/api/auth/registrar";
+        bodyData.password = formData.password;
+      }
+      const response = await fetch(endpoint, {
+        method:  "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization:  `Bearer ${token}`,
+        },
+        body: JSON.stringify(bodyData),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Error creando usuario");
+      setFormData({ nombre_completo: "", correo: "", telefono: "", rol: "voluntario", password: "" });
+      fetchUsuarios();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="usuarios-layout">
+      <Sidebar />
+      <MobileSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="usuarios-main">
+        <Navbar openSidebar={() => setSidebarOpen(true)} />
+        <div className="usuarios-content">
+          <div className="usuarios-header">
+            <h1>Gestión de Usuarios</h1>
+            <p>Administra los permisos y accesos del personal.</p>
+          </div>
+          <div className="usuarios-grid">
+
+            {/* TABLA */}
+            <div className="usuarios-table-card">
+              <div className="usuarios-table-header">
+                <h2>Listado de Personal</h2>
+                <span>{usuarios.length} Total</span>
+              </div>
+              <div className="usuarios-table">
+                <div className="usuarios-table-head">
+                  <span>Nombre</span>
+                  <span>Correo</span>
+                  <span>Rol</span>
+                  <span>Teléfono</span>
+                </div>
+                {usuarios.map((usuario) => (
+                  <div className="usuarios-row" key={usuario.id}>
+                    <div className="usuario-name">
+                      <div className="usuario-avatar">
+                        {usuario.nombre_completo?.charAt(0)}
+                      </div>
+                      <span>{usuario.nombre_completo}</span>
+                    </div>
+                    <span>{usuario.correo}</span>
+                    <span className={`rol-badge ${usuario.rol}`}>{usuario.rol}</span>
+                    <span>{usuario.telefono}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* FORM */}
+            <div className="usuarios-form-card">
+              <div className="usuarios-form-title">
+                <UserPlus size={20} />
+                <h2>Nuevo Usuario</h2>
+              </div>
+              <form onSubmit={handleSubmit} className="usuarios-form">
+                <div className="form-group">
+                  <label>Nombre Completo</label>
+                  <input type="text" name="nombre_completo" value={formData.nombre_completo} onChange={handleChange} placeholder="Ingrese su nombre completo" required />
+                </div>
+                <div className="form-group">
+                  <label>Correo Electrónico</label>
+                  <input type="email" name="correo" value={formData.correo} onChange={handleChange} placeholder="ejemplo@email.com" required />
+                </div>
+                <div className="form-group">
+                  <label>Teléfono</label>
+                  <input type="text" name="telefono" value={formData.telefono} onChange={handleChange} placeholder="Ingrese su número" required />
+                </div>
+                <div className="form-group">
+                  <label>Rol del Sistema</label>
+                  <CustomSelect
+                    name="rol"
+                    options={ROL_OPTIONS}
+                    value={formData.rol}
+                    onChange={handleChange}
+                  />
+                </div>
+                {formData.rol === "administrador" && (
+                  <div className="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="********" required />
+                  </div>
+                )}
+                {error && <p className="form-error">{error}</p>}
+                <button type="submit" className="save-user-btn" disabled={loading}>
+                  {loading ? "Guardando..." : "Guardar Usuario"}
+                </button>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Usuarios;
