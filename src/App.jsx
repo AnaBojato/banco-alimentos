@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Inicio from "./pages/Inicio";
 import Donation from "./pages/Donation";
 import Usuarios from "./pages/Usuarios";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -33,6 +34,11 @@ function App() {
       <Route
         path="/usuarios"
         element={<Usuarios />}
+      />
+
+      <Route
+        path="/profile"
+        element={<ProfilePage />}
       />
 
     </Routes>
