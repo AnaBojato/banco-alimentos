@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-
 import { UserPlus } from "lucide-react";
+import api from "../api/api"; // ← AGREGADO
 
 import Sidebar from "../components/Sidebar/Sidebar";
 import Navbar from "../components/Navbar/Navbar";
@@ -29,15 +29,10 @@ function Usuarios() {
     password:        "",
   });
 
-  const token = localStorage.getItem("token");
-
   const fetchUsuarios = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/usuarios", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      setUsuarios(data);
+      const response = await api.get("/api/usuarios"); // ← CORREGIDO
+      setUsuarios(response.data);
     } catch (err) {
       console.log(err);
     }
@@ -55,7 +50,7 @@ function Usuarios() {
     setLoading(true);
     setError("");
     try {
-      let endpoint = "http://localhost:3000/api/usuarios";
+      let endpoint = "/api/usuarios";
       let bodyData = {
         nombre_completo: formData.nombre_completo,
         correo:          formData.correo,
@@ -63,23 +58,16 @@ function Usuarios() {
         rol:             formData.rol,
       };
       if (formData.rol === "administrador") {
-        endpoint          = "http://localhost:3000/api/auth/registrar";
+        endpoint          = "/api/auth/registrar"; // ← CORREGIDO
         bodyData.password = formData.password;
       }
-      const response = await fetch(endpoint, {
-        method:  "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization:  `Bearer ${token}`,
-        },
-        body: JSON.stringify(bodyData),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Error creando usuario");
+
+      const response = await api.post(endpoint, bodyData); // ← CORREGIDO
+
       setFormData({ nombre_completo: "", correo: "", telefono: "", rol: "voluntario", password: "" });
       fetchUsuarios();
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.error || "Error creando usuario");
     } finally {
       setLoading(false);
     }
