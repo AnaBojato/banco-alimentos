@@ -1,0 +1,50 @@
+.profile-dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: #f9fafb;
+}
+
+.profile-main-content {
+  flex: 1;
+}
+
+.profile-header-navbar {
+  height: 80px;
+
+  background: white;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  padding: 0 24px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-header-navbar h2 {
+  font-size: 16px;
+}
+
+.menu-btn {
+  display: none;
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .desktop-sidebar {
+    display: none;
+  }
+
+  .menu-btn {
+    display: block;
+  }
+
+  .profile-header-navbar h2 {
+    display: none;
+  }
+}

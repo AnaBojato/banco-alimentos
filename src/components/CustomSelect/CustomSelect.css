@@ -1,0 +1,113 @@
+.custom-select {
+  position: relative;
+  width: 100%;
+}
+
+/* ── Trigger ─────────────────────────────── */
+
+.custom-select__trigger {
+  width: 100%;
+  height: 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 18px;
+
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 16px;
+
+  font-size: 15px;
+  font-weight: 500;
+  color: #111827;
+
+  cursor: pointer;
+  text-align: left;
+
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.custom-select__trigger:focus {
+  outline: none;
+}
+
+.custom-select.open .custom-select__trigger {
+  border-color: #166534;
+  box-shadow: 0 0 0 4px rgba(22, 101, 52, 0.08);
+}
+
+/* ── Flecha ──────────────────────────────── */
+
+.custom-select__arrow {
+  color: #6b7280;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.custom-select.open .custom-select__arrow {
+  transform: rotate(180deg);
+  color: #166534;
+}
+
+/* ── Dropdown ────────────────────────────── */
+
+.custom-select__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+
+  padding: 6px;
+  margin: 0;
+  list-style: none;
+
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.06),
+    0 10px 24px -4px rgba(0, 0, 0, 0.08);
+
+  animation: dropdown-in 0.15s ease;
+}
+
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Opciones ────────────────────────────── */
+
+.custom-select__option {
+  padding: 12px 14px;
+  border-radius: 10px;
+
+  font-size: 15px;
+  font-weight: 500;
+  color: #374151;
+
+  cursor: pointer;
+
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.custom-select__option:hover {
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.custom-select__option.selected {
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 600;
+}
