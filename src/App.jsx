@@ -70,6 +70,16 @@ function App() {
         element={<RequireAuth><ProfilePage /></RequireAuth>}
       />
 
+      <Route
+        path="/usuarios"
+        element={<Usuarios />}
+      />
+
+      <Route
+        path="/profile"
+        element={<ProfilePage />}
+      />
+
     </Routes>
   );
 }
