@@ -16,6 +16,7 @@ import DashboardCard from "../components/DashboardCard/DashboardCard";
 import QuickActionCard from "../components/QuickActionCard/QuickActionCard";
 import MobileSidebar from "../components/MobileSideBar/MobileSidebar";
 import ProfileButton from "../components/ProfileButton/ProfileButton";
+import { logoutService } from "../services/authService";
 
 import "../styles/inicio.css";
 
@@ -106,9 +107,10 @@ function Inicio() {
             onProfileClick={() =>
               navigate("/profile")
             }
-            onLogout={() =>
-              navigate("/login")
-            }
+            onLogout={() => {
+              logoutService();
+              navigate("/login");
+            }}
           />
         </Navbar>
 

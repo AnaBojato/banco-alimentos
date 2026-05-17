@@ -10,7 +10,7 @@ function Login() {
   const navigate = useNavigate(); // ← AGREGADO
 
   const [formData, setFormData] = useState({
-    correo: "",        // ← CORREGIDO: era "email", debe ser "correo"
+    correo: "",        
     password: "",
     remember: false,
   });

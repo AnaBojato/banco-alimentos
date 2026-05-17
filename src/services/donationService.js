@@ -1,8 +1,8 @@
-const API_URL = "http://localhost:3000/donaciones";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/donaciones`;
 
 export const crearDonacion = async (donacionData) => {
 
-  const response = await fetch(API_URL, {
+  const response = await fetch(`${API_URL}/public`, {
     method: "POST",
 
     headers: {

@@ -53,14 +53,10 @@ function Donation() {
     try {
 
       const donacionData = {
+        producto,
+        tipo,
         cantidad: Number(cantidad),
-
-        productos: [
-          {
-            producto_id: 1
-          }
-        ],
-
+        unidad,
         donante: nombre
           ? {
               nombre_completo: nombre,

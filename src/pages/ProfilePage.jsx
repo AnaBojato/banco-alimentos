@@ -7,6 +7,7 @@ import Sidebar from "../components/Sidebar/Sidebar";
 import MobileSidebar from "../components/MobileSidebar/MobileSidebar";
 import ProfileButton from "../components/ProfileButton/ProfileButton";
 import Profile from "../components/Profile/Profile";
+import { logoutService } from "../services/authService";
 
 import "../styles/profilePage.css";
 
@@ -61,9 +62,10 @@ function ProfilePage() {
             onProfileClick={() =>
               navigate("/profile")
             }
-            onLogout={() =>
-              navigate("/login")
-            }
+            onLogout={() => {
+              logoutService();
+              navigate("/login");
+            }}
           />
         </header>
 
