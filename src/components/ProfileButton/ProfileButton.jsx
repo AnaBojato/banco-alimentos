@@ -27,8 +27,9 @@ function ProfileButton({
         </div>
 
         <img
-          src="https://i.pravatar.cc/100"
+          src="https://i.pravatar.cc/300"
           alt=""
+          className="profile-avatar"
         />
       </button>
 

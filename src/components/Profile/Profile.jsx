@@ -98,9 +98,11 @@ function Profile() {
         {/* LEFT */}
         <div className="profile-user-card">
           <div className="profile-avatar-container">
-            <div className="profile-avatar-placeholder">
-              {user.nombre_completo?.charAt(0)}
-            </div>
+            <img
+              src="https://i.pravatar.cc/300"
+              alt="profile"
+              className="profile-avatar"
+            />
             <button className="edit-avatar-btn">
               <Pencil size={16} />
             </button>
