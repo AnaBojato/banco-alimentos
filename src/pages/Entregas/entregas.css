@@ -1,0 +1,202 @@
+.entregas-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f7f9;
+}
+
+.entregas-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.entregas-content {
+  padding: 32px;
+}
+
+.entregas-header {
+  margin-bottom: 28px;
+}
+
+.entregas-header h1 {
+  font-size: 34px;
+  color: #1f2937;
+  margin-bottom: 6px;
+}
+
+.entregas-header p {
+  color: #6b7280;
+}
+
+.entregas-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+}
+
+/* FORM */
+
+.entrega-form-card {
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  height: fit-content;
+  border: 1px solid #e5e7eb;
+}
+
+.entrega-form-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.entrega-form-title h2 {
+  font-size: 20px;
+  color: #1f2937;
+}
+
+.entrega-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-group input {
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 14px;
+}
+
+.confirm-btn {
+  margin-top: 10px;
+  border: none;
+  background: #22c55e;
+  color: white;
+  padding: 14px;
+  border-radius: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.confirm-btn:hover {
+  background: #16a34a;
+}
+
+.form-error {
+  color: #dc2626;
+  font-size: 14px;
+}
+
+/* TABLE */
+
+.entregas-table-card {
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+}
+
+.entregas-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.entregas-table-header h2 {
+  font-size: 20px;
+  color: #1f2937;
+}
+
+.filter-btn {
+  border: none;
+  background: #f3f4f6;
+  padding: 10px 14px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.entregas-head,
+.entrega-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 120px;
+  gap: 16px;
+  align-items: center;
+}
+
+.entregas-head {
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 14px;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.entrega-row {
+  padding: 18px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.beneficiario-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.beneficiario-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #dcfce7;
+  color: #15803d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1100px) {
+
+  .entregas-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .entregas-content {
+    padding: 20px;
+  }
+
+  .entregas-head {
+    display: none;
+  }
+
+  .entrega-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+}

@@ -6,6 +6,7 @@ import Inicio from "./pages/Inicio/Inicio";
 import Donation from "./pages/Donation/Donation";
 import Usuarios from "./pages/Usuarios/Usuarios";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import Entregas from "./pages/Entregas/Entregas";
 
 const getCurrentUser = () => {
   const usuario = localStorage.getItem("usuario");
@@ -80,6 +81,11 @@ function App() {
         element={<ProfilePage />}
       />
 
+      <Route
+        path="/entregas"
+        element={<RequireAuth><Entregas /></RequireAuth>}
+      />
+      
     </Routes>
   );
 }
