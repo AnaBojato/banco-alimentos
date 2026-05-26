@@ -1,11 +1,11 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import Welcome from "./pages/Welcome";
-import Login from "./pages/Login";
-import Inicio from "./pages/Inicio";
-import Donation from "./pages/Donation";
-import Usuarios from "./pages/Usuarios";
-import ProfilePage from "./pages/ProfilePage";
+import Welcome from "./pages/Welcome/Welcome";
+import Login from "./pages/Login/Login";
+import Inicio from "./pages/Inicio/Inicio";
+import Donation from "./pages/Donation/Donation";
+import Usuarios from "./pages/Usuarios/Usuarios";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
 
 const getCurrentUser = () => {
   const usuario = localStorage.getItem("usuario");

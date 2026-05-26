@@ -10,15 +10,15 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 
-import Sidebar from "../components/Sidebar/Sidebar";
-import Navbar from "../components/Navbar/Navbar";
-import DashboardCard from "../components/DashboardCard/DashboardCard";
-import QuickActionCard from "../components/QuickActionCard/QuickActionCard";
-import MobileSidebar from "../components/MobileSideBar/MobileSidebar";
-import ProfileButton from "../components/ProfileButton/ProfileButton";
-import { logoutService } from "../services/authService";
+import Sidebar from "../../components/Sidebar/Sidebar";
+import Navbar from "../../components/Navbar/Navbar";
+import DashboardCard from "../../components/DashboardCard/DashboardCard";
+import QuickActionCard from "../../components/QuickActionCard/QuickActionCard";
+import MobileSidebar from "../../components/MobileSideBar/MobileSidebar";
+import ProfileButton from "../../components/ProfileButton/ProfileButton";
+import { logoutService } from "../../services/authService";
 
-import "../styles/inicio.css";
+import "../Inicio/inicio.css";
 
 function Inicio() {
   const navigate = useNavigate();

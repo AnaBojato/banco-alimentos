@@ -1,9 +1,9 @@
-import "../styles/welcome.css";
+import "../Welcome/welcome.css";
 
 import { Gift, Shield } from "lucide-react";
 
-import Logo from "../components/Logo/Logo";
-import StaffAccess from "../components/StaffAccess/StaffAccess";
+import Logo from "../../components/Logo/Logo";
+import StaffAccess from "../../components/StaffAccess/StaffAccess";
 import { useNavigate } from "react-router-dom";
 function Welcome() {
 

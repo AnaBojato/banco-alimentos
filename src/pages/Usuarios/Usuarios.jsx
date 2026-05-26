@@ -4,15 +4,15 @@ import { useNavigate } from "react-router-dom";
 
 import { UserPlus } from "lucide-react";
 
-import api from "../api/api";
+import api from "../../api/api";
 
-import Sidebar from "../components/Sidebar/Sidebar";
-import Navbar from "../components/Navbar/Navbar";
-import MobileSidebar from "../components/MobileSidebar/MobileSidebar";
-import CustomSelect from "../components/CustomSelect/CustomSelect";
-import ProfileButton from "../components/ProfileButton/ProfileButton";
+import Sidebar from "../../components/Sidebar/Sidebar";
+import Navbar from "../../components/Navbar/Navbar";
+import MobileSidebar from "../../components/MobileSidebar/MobileSidebar";
+import CustomSelect from "../../components/CustomSelect/CustomSelect";
+import ProfileButton from "../../components/ProfileButton/ProfileButton";
 
-import "../styles/usuarios.css";
+import "../Usuarios/usuarios.css";
 
 const ROL_OPTIONS = [
   {

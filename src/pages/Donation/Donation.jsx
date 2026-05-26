@@ -1,4 +1,4 @@
-import "../styles/donation.css";
+import "../Donation/Donation.css";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import {
   Send
 } from "lucide-react";
 
-import { crearDonacion } from "../services/donationService";
+import { crearDonacion } from "../../services/donationService";
 
 function Donation() {
 

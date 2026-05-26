@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // ← AGREGADO
-import api from "../api/api";
+import api from "../../api/api";
 import { Mail, Lock, ArrowRight } from "lucide-react";
-import Logo from "../components/Logo/Logo";
-import BackButton from "../components/BackButton/BackButton";
-import "../styles/Login.css";
+import Logo from "../../components/Logo/Logo";
+import BackButton from "../../components/BackButton/BackButton";
+import "../Login/login.css";
 
 function Login() {
   const navigate = useNavigate(); // ← AGREGADO
