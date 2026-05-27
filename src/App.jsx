@@ -7,6 +7,7 @@ import Donation from "./pages/Donation/Donation";
 import Usuarios from "./pages/Usuarios/Usuarios";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import Entregas from "./pages/Entregas/Entregas";
+import Inventario from "./pages/Inventario/Inventario";
 
 const getCurrentUser = () => {
   const usuario = localStorage.getItem("usuario");
@@ -86,6 +87,10 @@ function App() {
         element={<RequireAuth><Entregas /></RequireAuth>}
       />
       
+      <Route
+        path="/inventario"
+        element={<RequireAuth><Inventario /></RequireAuth>}
+      />
     </Routes>
   );
 }

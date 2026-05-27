@@ -1,0 +1,279 @@
+.inventario-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f7fb;
+}
+
+.inventario-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.inventario-content {
+  padding: 24px;
+}
+
+/* HEADER */
+
+.inventario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.inventario-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.inventario-header p {
+  color: #6b7280;
+  margin-top: 5px;
+}
+
+.inventario-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.action-btn {
+  border: none;
+  background: white;
+  border: 1px solid #e5e7eb;
+  padding: 10px 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.action-btn:hover {
+  background: #f3f4f6;
+}
+
+/* CARD */
+
+.inventario-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+/* TABLE HEADER */
+
+.inventario-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px;
+  border-bottom: 1px solid #f1f1f1;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.inventario-table-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.inventario-table-header span {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* SEARCH */
+
+.table-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f5f7fb;
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+
+.table-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 220px;
+}
+
+/* TABLE */
+
+.inventario-table-head,
+.inventario-row {
+  display: grid;
+  grid-template-columns:
+    2fr
+    1fr
+    1fr
+    1fr
+    1.2fr
+    1.2fr
+    0.7fr;
+
+  gap: 16px;
+  align-items: center;
+}
+
+.inventario-table-head {
+  padding: 16px 22px;
+  background: #f9fafb;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.inventario-row {
+  padding: 18px 22px;
+  border-top: 1px solid #f3f4f6;
+  font-size: 14px;
+}
+
+.inventario-row:hover {
+  background: #fafafa;
+}
+
+/* PRODUCT */
+
+.producto-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.producto-img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.producto-cell h4 {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.producto-cell span {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* STATUS */
+
+.status-badge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.status-ok {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* PAGINATION */
+
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px;
+  border-top: 1px solid #f3f4f6;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.pagination {
+  display: flex;
+  gap: 8px;
+}
+
+.pagination-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-btn.active {
+  background: #2e7d32;
+  color: white;
+  border-color: #2e7d32;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1200px) {
+
+  .inventario-card {
+    overflow-x: auto;
+  }
+
+  .inventario-table-head,
+  .inventario-row {
+    min-width: 1100px;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .inventario-content {
+    padding: 16px;
+  }
+
+  .inventario-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .inventario-actions {
+    width: 100%;
+  }
+
+  .action-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .table-search {
+    width: 100%;
+  }
+
+  .table-search input {
+    width: 100%;
+  }
+
+}
