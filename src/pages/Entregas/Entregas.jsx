@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   ClipboardPlus,
-  Filter,
   Package,
+  Search,
+  Truck,
+  Calendar,
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
@@ -16,14 +18,34 @@ import MobileSidebar from "../../components/MobileSidebar/MobileSidebar";
 import ProfileButton from "../../components/ProfileButton/ProfileButton";
 import CustomSelect from "../../components/CustomSelect/CustomSelect";
 
-import "../Entregas/entregas.css";
+import "./entregas.css";
 
 function Entregas() {
 
   const navigate = useNavigate();
 
+  // ============================================
+  // UI
+  // ============================================
+
   const [sidebarOpen, setSidebarOpen] =
     useState(false);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [saving, setSaving] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  const [search, setSearch] =
+    useState("");
+
+  // ============================================
+  // DATA
+  // ============================================
 
   const [entregas, setEntregas] =
     useState([]);
@@ -34,11 +56,9 @@ function Entregas() {
   const [productos, setProductos] =
     useState([]);
 
-  const [loading, setLoading] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
+  // ============================================
+  // FORM
+  // ============================================
 
   const [formData, setFormData] =
     useState({
@@ -47,35 +67,86 @@ function Entregas() {
       fecha: "",
     });
 
-  // ========================================
-  // FETCH
-  // ========================================
+  // ============================================
+  // FETCH DATA
+  // ============================================
 
   const fetchData = async () => {
 
     try {
 
-      const [
-        entregasRes,
-        beneficiariosRes,
-        productosRes,
-      ] = await Promise.all([
-        api.get("/api/entregas"),
-        api.get("/api/beneficiarios"),
-        api.get("/api/productos"),
-      ]);
+      setLoading(true);
 
-      setEntregas(entregasRes.data);
+      setError("");
+
+      // ============================================
+      // REQUESTS
+      // ============================================
+
+      const entregasRes =
+        await api.get("/api/entregas");
+
+      const beneficiariosRes =
+        await api.get("/api/beneficiarios");
+
+      const productosRes =
+        await api.get("/api/productos");
+
+      // ============================================
+      // SAFE DATA
+      // ============================================
+
+      const entregasData =
+        Array.isArray(entregasRes.data)
+          ? entregasRes.data
+          : [];
+
+      const beneficiariosData =
+        Array.isArray(beneficiariosRes.data)
+          ? beneficiariosRes.data
+          : [];
+
+      const productosData =
+        Array.isArray(productosRes.data)
+          ? productosRes.data
+          : [];
+
+      // ============================================
+      // PRODUCTOS DISPONIBLES
+      // ============================================
+
+      const productosDisponibles =
+        productosData.filter(
+          (producto) =>
+            producto &&
+            producto.id &&
+            producto.nombre
+        );
+
+      setEntregas(entregasData);
 
       setBeneficiarios(
-        beneficiariosRes.data
+        beneficiariosData
       );
 
-      setProductos(productosRes.data);
+      setProductos(
+        productosDisponibles
+      );
 
     } catch (err) {
 
-      console.log(err);
+      console.log(
+        "ERROR FETCH:",
+        err
+      );
+
+      setError(
+        "Error cargando información"
+      );
+
+    } finally {
+
+      setLoading(false);
 
     }
 
@@ -87,9 +158,28 @@ function Entregas() {
 
   }, []);
 
-  // ========================================
-  // FORM
-  // ========================================
+  // ============================================
+  // OPTIONS
+  // ============================================
+
+  const beneficiarioOptions =
+    beneficiarios.map(
+      (beneficiario) => ({
+        value: beneficiario.id,
+        label:
+          beneficiario.nombre,
+      })
+    );
+
+  const productoOptions =
+    productos.map((producto) => ({
+      value: producto.id,
+      label: `${producto.nombre} (${producto.cantidad || 0})`,
+    }));
+
+  // ============================================
+  // HANDLE CHANGE
+  // ============================================
 
   const handleChange = (e) => {
 
@@ -105,15 +195,15 @@ function Entregas() {
 
   };
 
-  // ========================================
-  // SUBMIT
-  // ========================================
+  // ============================================
+  // CREATE ENTREGA
+  // ============================================
 
   const handleSubmit = async (e) => {
 
     e.preventDefault();
 
-    setLoading(true);
+    setSaving(true);
 
     setError("");
 
@@ -123,7 +213,9 @@ function Entregas() {
         "/api/entregas",
         {
           beneficiario_id:
-            formData.beneficiario_id,
+            Number(
+              formData.beneficiario_id
+            ),
 
           fecha:
             formData.fecha,
@@ -131,11 +223,15 @@ function Entregas() {
           productos: [
             {
               producto_id:
-                formData.producto_id,
+                Number(
+                  formData.producto_id
+                ),
             },
           ],
         }
       );
+
+      // RESET
 
       setFormData({
         beneficiario_id: "",
@@ -143,44 +239,71 @@ function Entregas() {
         fecha: "",
       });
 
-      fetchData();
+      await fetchData();
 
     } catch (err) {
 
+      console.log(err);
+
       setError(
-        err.response?.data?.error ||
-        "Error creando entrega"
+        err.response?.data
+          ?.error ||
+          "Error creando entrega"
       );
 
     } finally {
 
-      setLoading(false);
+      setSaving(false);
 
     }
 
   };
 
-  // ========================================
-  // OPTIONS
-  // ========================================
+  // ============================================
+  // FILTER
+  // ============================================
 
-  const beneficiarioOptions =
-    beneficiarios.map((b) => ({
-      value: b.id,
-      label: b.nombre,
-    }));
+  const entregasFiltradas =
+    useMemo(() => {
 
-  const productoOptions =
-    productos.map((p) => ({
-      value: p.id,
-      label: p.nombre,
-    }));
+      return entregas.filter(
+        (entrega) => {
+
+          const beneficiario =
+            entrega?.Beneficiario?.nombre
+              ?.toLowerCase() || "";
+
+          const productos =
+            entrega?.Productos?.map(
+              (p) =>
+                p.nombre
+            )
+              .join(" ")
+              .toLowerCase() || "";
+
+          return (
+            beneficiario.includes(
+              search.toLowerCase()
+            ) ||
+            productos.includes(
+              search.toLowerCase()
+            )
+          );
+
+        }
+      );
+
+    }, [search, entregas]);
 
   return (
 
     <div className="entregas-layout">
 
+      {/* SIDEBAR */}
+
       <Sidebar />
+
+      {/* MOBILE */}
 
       <MobileSidebar
         isOpen={sidebarOpen}
@@ -189,7 +312,11 @@ function Entregas() {
         }
       />
 
+      {/* MAIN */}
+
       <div className="entregas-main">
+
+        {/* NAVBAR */}
 
         <Navbar
           openSidebar={() =>
@@ -208,6 +335,8 @@ function Entregas() {
 
         </Navbar>
 
+        {/* CONTENT */}
+
         <div className="entregas-content">
 
           {/* HEADER */}
@@ -217,15 +346,23 @@ function Entregas() {
             <div>
 
               <h1>
-                Entregas / Salidas
+                Gestión de Entregas
               </h1>
 
               <p>
-                Gestión y registro de
-                distribución de suministros.
+                Control y registro de
+                salidas de productos.
               </p>
 
             </div>
+
+            <button className="registrar-btn">
+
+              <ClipboardPlus size={18} />
+
+              Registrar Entrega
+
+            </button>
 
           </div>
 
@@ -233,24 +370,203 @@ function Entregas() {
 
           <div className="entregas-grid">
 
+            {/* ============================================ */}
+            {/* TABLE */}
+            {/* ============================================ */}
+
+            <div className="entregas-table-card">
+
+              <div className="entregas-table-header">
+
+                <div>
+
+                  <h2>
+                    Historial de Entregas
+                  </h2>
+
+                  <span>
+                    {
+                      entregasFiltradas.length
+                    }{" "}
+                    registros
+                  </span>
+
+                </div>
+
+                <div className="table-search">
+
+                  <Search size={15} />
+
+                  <input
+                    type="text"
+                    placeholder="Buscar entrega..."
+                    value={search}
+                    onChange={(e) =>
+                      setSearch(
+                        e.target.value
+                      )
+                    }
+                  />
+
+                </div>
+
+              </div>
+
+              {/* HEAD */}
+
+              <div className="entregas-table-head">
+
+                <span>
+                  Beneficiario
+                </span>
+
+                <span>
+                  Dirección
+                </span>
+
+                <span>
+                  Producto
+                </span>
+
+                <span>
+                  Cantidad
+                </span>
+
+                <span>
+                  Fecha
+                </span>
+
+              </div>
+
+              {/* BODY */}
+
+              <div className="entregas-table-body">
+
+                {loading ? (
+
+                  <div className="empty-state">
+                    Cargando...
+                  </div>
+
+                ) : entregasFiltradas.length === 0 ? (
+
+                  <div className="empty-state">
+                    No hay entregas registradas
+                  </div>
+
+                ) : (
+
+                  entregasFiltradas.map(
+                    (entrega) => (
+
+                      <div
+                        className="entrega-row"
+                        key={entrega.id}
+                      >
+
+                        {/* BENEFICIARIO */}
+
+                        <div className="beneficiario-cell">
+
+                          <div className="beneficiario-avatar">
+
+                            <Truck size={14} />
+
+                          </div>
+
+                          <span>
+
+                            {entrega
+                              ?.Beneficiario
+                              ?.nombre ||
+                              "Sin nombre"}
+
+                          </span>
+
+                        </div>
+
+                        {/* DIRECCION */}
+
+                        <span className="direccion-cell">
+
+                          {entrega
+                            ?.Beneficiario
+                            ?.direccion ||
+                            "No registrada"}
+
+                        </span>
+
+                        {/* PRODUCTOS */}
+
+                        <span className="producto-cell">
+
+                          {entrega?.Productos
+                            ?.map(
+                              (
+                                producto
+                              ) =>
+                                producto.nombre
+                            )
+                            .join(", ") ||
+                            "Sin producto"}
+
+                        </span>
+
+                        {/* CANTIDAD */}
+
+                        <span className="cantidad-cell">
+
+                          {entrega
+                            ?.Productos
+                            ?.length || 0}
+
+                        </span>
+
+                        {/* FECHA */}
+
+                        <span className="fecha-cell">
+
+                          {entrega.fecha
+                            ? new Date(
+                                entrega.fecha
+                              ).toLocaleDateString()
+                            : "Sin fecha"}
+
+                        </span>
+
+                      </div>
+
+                    )
+                  )
+
+                )}
+
+              </div>
+
+            </div>
+
+            {/* ============================================ */}
             {/* FORM */}
+            {/* ============================================ */}
 
             <div className="entrega-form-card">
 
-              <div className="entrega-form-title">
+              <div className="form-title">
 
-                <ClipboardPlus size={20} />
+                <Package size={18} />
 
                 <h2>
-                  Nueva Salida
+                  Nueva Entrega
                 </h2>
 
               </div>
 
               <form
-                className="entrega-form"
                 onSubmit={handleSubmit}
+                className="entrega-form"
               >
+
+                {/* BENEFICIARIO */}
 
                 <div className="form-group">
 
@@ -263,14 +579,18 @@ function Entregas() {
                     value={
                       formData.beneficiario_id
                     }
-                    onChange={handleChange}
+                    onChange={
+                      handleChange
+                    }
                     options={
                       beneficiarioOptions
                     }
-                    placeholder="Seleccionar beneficiario..."
+                    placeholder="Seleccionar beneficiario"
                   />
 
                 </div>
+
+                {/* PRODUCTO */}
 
                 <div className="form-group">
 
@@ -283,14 +603,22 @@ function Entregas() {
                     value={
                       formData.producto_id
                     }
-                    onChange={handleChange}
+                    onChange={
+                      handleChange
+                    }
                     options={
                       productoOptions
                     }
-                    placeholder="Seleccionar producto..."
+                    placeholder={
+                      productos.length === 0
+                        ? "No hay productos"
+                        : "Seleccionar producto"
+                    }
                   />
 
                 </div>
+
+                {/* FECHA */}
 
                 <div className="form-group">
 
@@ -298,121 +626,51 @@ function Entregas() {
                     Fecha
                   </label>
 
-                  <input
-                    type="date"
-                    name="fecha"
-                    value={formData.fecha}
-                    onChange={handleChange}
-                    required
-                  />
+                  <div className="date-input-wrapper">
+
+                    <Calendar size={16} />
+
+                    <input
+                      type="date"
+                      name="fecha"
+                      value={
+                        formData.fecha
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      required
+                    />
+
+                  </div>
 
                 </div>
 
+                {/* ERROR */}
+
                 {error && (
-                  <p className="form-error">
+
+                  <div className="form-error">
                     {error}
-                  </p>
+                  </div>
+
                 )}
+
+                {/* BUTTON */}
 
                 <button
                   type="submit"
                   className="confirm-btn"
-                  disabled={loading}
+                  disabled={saving}
                 >
 
-                  {loading
+                  {saving
                     ? "Guardando..."
                     : "Confirmar Entrega"}
 
                 </button>
 
               </form>
-
-            </div>
-
-            {/* TABLE */}
-
-            <div className="entregas-table-card">
-
-              <div className="entregas-table-header">
-
-                <h2>
-                  Historial de Salidas
-                </h2>
-
-                <button className="filter-btn">
-
-                  <Filter size={16} />
-
-                  Filtrar
-
-                </button>
-
-              </div>
-
-              <div className="entregas-table">
-
-                <div className="entregas-head">
-
-                  <span>
-                    Beneficiario
-                  </span>
-
-                  <span>
-                    Producto
-                  </span>
-
-                  <span>
-                    Fecha
-                  </span>
-
-                </div>
-
-                {entregas.map((entrega) => (
-
-                  <div
-                    className="entrega-row"
-                    key={entrega.id}
-                  >
-
-                    <div className="beneficiario-info">
-
-                      <div className="beneficiario-icon">
-
-                        <Package size={16} />
-
-                      </div>
-
-                      <span>
-                        {
-                          entrega.Beneficiario
-                            ?.nombre
-                        }
-                      </span>
-
-                    </div>
-
-                    <span>
-
-                      {entrega.Productos
-                        ?.map((p) => p.nombre)
-                        .join(", ")}
-
-                    </span>
-
-                    <span>
-
-                      {new Date(
-                        entrega.fecha
-                      ).toLocaleDateString()}
-
-                    </span>
-
-                  </div>
-
-                ))}
-
-              </div>
 
             </div>
 
