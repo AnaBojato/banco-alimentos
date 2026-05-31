@@ -1,14 +1,10 @@
 import "./inventario.css";
+import { useState, useEffect } from "react";
+import { obtenerProductos } from "../../services/productoService";
 
 import {
-  Filter,
-  Download,
-  ChevronLeft,
-  ChevronRight,
   Search,
 } from "lucide-react";
-
-import { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -35,49 +31,83 @@ function Inventario() {
   // DATA
   // ============================================
 
-  const inventoryData = [
-    {
-      id: "INV-00124",
-      name: "Leche Entera (Lote A)",
-      image:
-        "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=80&h=80&fit=crop",
-      category: "Lácteos",
-      quantity: "450",
-      unit: "Unidades",
-      type: "Perecedero",
-      donationDate: "10 Oct, 2023",
-      expirationDate: "12 Oct, 2023",
-      status: "ok",
-    },
+  const [inventoryData, setInventoryData] = useState([]);
 
-    {
-      id: "INV-00852",
-      name: "Manzanas Rojas",
-      image:
-        "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=80&h=80&fit=crop",
-      category: "Frutas",
-      quantity: "120",
-      unit: "kg",
-      type: "Perecedero",
-      donationDate: "20 May, 2023",
-      expirationDate: "25 May, 2023",
-      status: "warning",
-    },
+  useEffect(() => {
+    cargarProductos();
+  }, []);
 
-    {
-      id: "INV-00391",
-      name: "Vegetales en Conserva",
-      image:
-        "https://images.unsplash.com/photo-1534483509719-3feaee7c30da?w=80&h=80&fit=crop",
-      category: "Enlatados",
-      quantity: "85",
-      unit: "Lote",
-      type: "No Perecedero",
-      donationDate: "05 Ene, 2023",
-      expirationDate: "10 Ene, 2023",
-      status: "danger",
-    },
-  ];
+  const cargarProductos = async () => {
+    try {
+      const productos = await obtenerProductos();
+
+      const productosFormateados = productos.map(
+        (producto) => {
+          const hoy = new Date();
+
+          const vencimiento = producto.fecha_vencimiento
+            ? new Date(producto.fecha_vencimiento)
+            : null;
+
+          let status = "ok";
+
+          if (vencimiento) {
+            const diferenciaDias =
+              Math.ceil(
+                (vencimiento - hoy) /
+                  (1000 * 60 * 60 * 24)
+              );
+
+            if (diferenciaDias < 0) {
+              status = "danger";
+            } else if (diferenciaDias <= 7) {
+              status = "warning";
+            }
+          }
+
+          return {
+            id: producto.id,
+            name: producto.nombre,
+            image:
+              "https://via.placeholder.com/80",
+            category:
+              producto.categoria ||
+              "Sin categoría",
+            quantity: producto.cantidad,
+            unit: "unidades",
+            type:
+              producto.tipo ===
+              "no_perecedero"
+                ? "No Perecedero"
+                : "Perecedero",
+            donationDate: producto.createdAt
+              ? new Date(
+                  producto.createdAt
+                ).toLocaleDateString("es-CO")
+              : "-",
+            expirationDate:
+              producto.fecha_vencimiento
+                ? new Date(
+                    producto.fecha_vencimiento
+                  ).toLocaleDateString(
+                    "es-CO"
+                  )
+                : "N/A",
+            status,
+          };
+        }
+      );
+
+      setInventoryData(
+        productosFormateados
+      );
+    } catch (error) {
+      console.error(
+        "Error al cargar productos:",
+        error
+      );
+    }
+  };
 
   // ============================================
   // STATUS
@@ -90,24 +120,23 @@ function Inventario() {
       case "ok":
         return (
           <span className="status-badge status-ok">
-            D
+            Disponible
           </span>
         );
 
       case "warning":
         return (
           <span className="status-badge status-warning">
-            P.V
+            Próximo
           </span>
         );
 
       case "danger":
         return (
           <span className="status-badge status-danger">
-            V
+            Vencido
           </span>
         );
-
       default:
         return null;
 
@@ -186,26 +215,6 @@ function Inventario() {
                 preventivo de caducidad
                 de alimentos.
               </p>
-
-            </div>
-
-            <div className="inventario-actions">
-
-              <button className="action-btn">
-
-                <Filter size={16} />
-
-                Filtrar
-
-              </button>
-
-              <button className="action-btn">
-
-                <Download size={16} />
-
-                Exportar
-
-              </button>
 
             </div>
 
@@ -299,12 +308,6 @@ function Inventario() {
 
                     <div className="producto-cell">
 
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="producto-img"
-                      />
-
                       <div>
 
                         <h4>
@@ -369,40 +372,6 @@ function Inventario() {
 
                 )
               )}
-
-            </div>
-
-            {/* PAGINATION */}
-
-            <div className="pagination-container">
-
-              <span>
-                Mostrando 3 productos
-              </span>
-
-              <div className="pagination">
-
-                <button className="pagination-btn">
-
-                  <ChevronLeft size={16} />
-
-                </button>
-
-                <button className="pagination-btn active">
-                  1
-                </button>
-
-                <button className="pagination-btn">
-                  2
-                </button>
-
-                <button className="pagination-btn">
-
-                  <ChevronRight size={16} />
-
-                </button>
-
-              </div>
 
             </div>
 
