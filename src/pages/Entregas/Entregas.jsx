@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-
 import {
   ClipboardPlus,
   Package,
@@ -8,8 +7,10 @@ import {
   Calendar,
   Minus,
   Plus,
+  Phone,
+  MapPin,
+  X,
 } from "lucide-react";
-
 import { useNavigate } from "react-router-dom";
 
 import api from "../../api/api";
@@ -26,49 +27,35 @@ import "./entregas.css";
 function Entregas() {
   const navigate = useNavigate();
 
-  // ============================================
-  // UI
-  // ============================================
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loadingEntregas, setLoadingEntregas] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
 
-  // ============================================
-  // DATA
-  // ============================================
   const [entregas, setEntregas] = useState([]);
   const [productos, setProductos] = useState([]);
 
-  // ============================================
-  // FORM
-  // ============================================
   const [formData, setFormData] = useState({
     beneficiario_nombre: "",
+    beneficiario_telefono: "",
+    beneficiario_direccion: "",
     producto_id: "",
     cantidad: 1,
     fecha: "",
   });
 
-  // ============================================
-  // PRODUCTO SELECCIONADO (para mostrar stock)
-  // ============================================
   const productoSeleccionado = useMemo(() => {
     if (!formData.producto_id) return null;
-    return productos.find(
-      (p) => String(p.id) === String(formData.producto_id)
-    );
+    return productos.find((p) => String(p.id) === String(formData.producto_id));
   }, [formData.producto_id, productos]);
 
-  // ============================================
-  // FETCH PRODUCTOS — igual que Inventario
-  // ============================================
   const cargarProductos = async () => {
     try {
       const data = await obtenerProductos();
       const disponibles = data.filter(
-        (p) => p && p.id && p.nombre && p.cantidad > 0
+        (p) => p && p.id && p.nombre && Number(p.cantidad) > 0
       );
       setProductos(disponibles);
     } catch (err) {
@@ -77,9 +64,6 @@ function Entregas() {
     }
   };
 
-  // ============================================
-  // FETCH ENTREGAS — independiente
-  // ============================================
   const cargarEntregas = async () => {
     setLoadingEntregas(true);
     try {
@@ -99,50 +83,45 @@ function Entregas() {
     cargarEntregas();
   }, []);
 
-  // ============================================
-  // OPTIONS
-  // ============================================
   const productoOptions = productos.map((producto) => ({
     value: producto.id,
     label: `${producto.nombre} (${producto.cantidad || 0} disponibles)`,
   }));
 
-  // ============================================
-  // HANDLE CHANGE
-  // ============================================
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "producto_id") {
-      setFormData({ ...formData, producto_id: value, cantidad: 1 });
+      setFormData((prev) => ({ ...prev, producto_id: value, cantidad: 1 }));
       return;
     }
 
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ============================================
-  // HANDLE CANTIDAD
-  // ============================================
   const handleCantidadChange = (delta) => {
-    const stock = productoSeleccionado?.cantidad || 0;
-    const nuevaCantidad = Math.min(Math.max(1, formData.cantidad + delta), stock);
-    setFormData({ ...formData, cantidad: nuevaCantidad });
+    const stock = Number(productoSeleccionado?.cantidad || 0);
+    const nuevaCantidad = Math.min(
+      Math.max(1, Number(formData.cantidad) + delta),
+      stock
+    );
+
+    setFormData((prev) => ({ ...prev, cantidad: nuevaCantidad }));
   };
 
   const handleCantidadInput = (e) => {
-    const stock = productoSeleccionado?.cantidad || 0;
+    const stock = Number(productoSeleccionado?.cantidad || 0);
     const val = parseInt(e.target.value, 10);
+
     if (isNaN(val)) {
-      setFormData({ ...formData, cantidad: 1 });
+      setFormData((prev) => ({ ...prev, cantidad: 1 }));
       return;
     }
-    setFormData({ ...formData, cantidad: Math.min(Math.max(1, val), stock) });
+
+    const cantidadClamped = Math.min(Math.max(1, val), stock);
+    setFormData((prev) => ({ ...prev, cantidad: cantidadClamped }));
   };
 
-  // ============================================
-  // CREATE ENTREGA (Secuencia encadenada para Backend fijo)
-  // ============================================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -153,28 +132,44 @@ function Entregas() {
       setSaving(false);
       return;
     }
+
+    if (!formData.beneficiario_telefono.trim()) {
+      setError("El teléfono del beneficiario es requerido");
+      setSaving(false);
+      return;
+    }
+
+    if (!formData.beneficiario_direccion.trim()) {
+      setError("La dirección del beneficiario es requerida");
+      setSaving(false);
+      return;
+    }
+
     if (!formData.producto_id) {
       setError("Debes seleccionar un producto");
       setSaving(false);
       return;
     }
+
     if (!formData.fecha) {
       setError("La fecha es requerida");
       setSaving(false);
       return;
     }
 
-    const stock = productoSeleccionado?.cantidad || 0;
-    if (formData.cantidad > stock) {
+    const stock = Number(productoSeleccionado?.cantidad || 0);
+    if (Number(formData.cantidad) > stock) {
       setError(`Solo hay ${stock} unidades disponibles`);
       setSaving(false);
       return;
     }
 
     try {
-      // 1. Crear el Beneficiario primero para obtener un ID válido
       const resBeneficiario = await api.post("/api/beneficiarios", {
-        nombre: formData.beneficiario_nombre.trim(),
+        nombre_completo: formData.beneficiario_nombre.trim(),
+        telefono: formData.beneficiario_telefono.trim(),
+        direccion: formData.beneficiario_direccion.trim(),
+        correo: "",
       });
 
       const nuevoBeneficiarioId = resBeneficiario.data?.id;
@@ -183,35 +178,35 @@ function Entregas() {
         throw new Error("El backend no devolvió el ID del nuevo beneficiario.");
       }
 
-      // 2. Crear la entrega asociada al ID que acabamos de generar
       await api.post("/api/entregas", {
         beneficiario_id: Number(nuevoBeneficiarioId),
         fecha: formData.fecha,
         productos: [
           {
             producto_id: Number(formData.producto_id),
+            cantidad: Number(formData.cantidad),
           },
         ],
       });
 
-      // 3. Descontar del inventario (Modificando el stock general del Producto)
       const nuevaCantidad = stock - Number(formData.cantidad);
+
       await api.put(`/api/productos/${formData.producto_id}`, {
         cantidad: nuevaCantidad,
       });
 
-      // RESET FORMULARIO
       setFormData({
         beneficiario_nombre: "",
+        beneficiario_telefono: "",
+        beneficiario_direccion: "",
         producto_id: "",
         cantidad: 1,
         fecha: "",
       });
 
-      // Recargar datos actualizados en la UI
+      setModalOpen(false);
       cargarProductos();
       cargarEntregas();
-
     } catch (err) {
       console.error("Error en el flujo de guardado:", err);
       setError(err.response?.data?.error || err.message || "Error creando entrega");
@@ -220,23 +215,41 @@ function Entregas() {
     }
   };
 
-  // ============================================
-  // FILTER
-  // ============================================
   const entregasFiltradas = useMemo(() => {
     return entregas.filter((entrega) => {
       const beneficiario = (
-        entrega?.beneficiario_nombre ||
-        entrega?.Beneficiario?.nombre ||
+        entrega?.Beneficiario?.nombre_completo ??
+        entrega?.Beneficiario?.nombre ??
+        entrega?.beneficiario?.nombre_completo ??
+        entrega?.beneficiario?.nombre ??
+        entrega?.beneficiario_nombre ??
+        ""
+      ).toLowerCase();
+
+      const direccion = (
+        entrega?.Beneficiario?.direccion ??
+        entrega?.beneficiario?.direccion ??
+        entrega?.direccion ??
+        ""
+      ).toLowerCase();
+
+      const telefono = (
+        entrega?.Beneficiario?.telefono ??
+        entrega?.beneficiario?.telefono ??
+        entrega?.telefono ??
         ""
       ).toLowerCase();
 
       const prods =
         entrega?.Productos?.map((p) => p.nombre).join(" ").toLowerCase() || "";
 
+      const textoBusqueda = search.toLowerCase();
+
       return (
-        beneficiario.includes(search.toLowerCase()) ||
-        prods.includes(search.toLowerCase())
+        beneficiario.includes(textoBusqueda) ||
+        direccion.includes(textoBusqueda) ||
+        telefono.includes(textoBusqueda) ||
+        prods.includes(textoBusqueda)
       );
     });
   }, [search, entregas]);
@@ -259,21 +272,18 @@ function Entregas() {
         </Navbar>
 
         <div className="entregas-content">
-          {/* HEADER */}
           <div className="entregas-header">
             <div>
               <h1>Gestión de Entregas</h1>
               <p>Control y registro de salidas de productos.</p>
             </div>
-            <button className="registrar-btn">
+            <button className="registrar-btn" onClick={() => setModalOpen(true)}>
               <ClipboardPlus size={18} />
               Registrar Entrega
             </button>
           </div>
 
-          {/* GRID */}
           <div className="entregas-grid">
-            {/* TABLE */}
             <div className="entregas-table-card">
               <div className="entregas-table-header">
                 <div>
@@ -294,6 +304,7 @@ function Entregas() {
               <div className="entregas-table-head">
                 <span>Beneficiario</span>
                 <span>Dirección</span>
+                <span>Teléfono</span>
                 <span>Producto</span>
                 <span>Cantidad</span>
                 <span>Fecha</span>
@@ -312,28 +323,41 @@ function Entregas() {
                           <Truck size={14} />
                         </div>
                         <span>
-                          {entrega?.Beneficiario?.nombre ||
-                            entrega?.beneficiario_nombre ||
+                          {entrega?.Beneficiario?.nombre_completo ??
+                            entrega?.Beneficiario?.nombre ??
+                            entrega?.beneficiario?.nombre_completo ??
+                            entrega?.beneficiario?.nombre ??
+                            entrega?.beneficiario_nombre ??
                             "Sin nombre"}
                         </span>
                       </div>
 
-                      <span className="direccion-cell">
-                        {entrega?.Beneficiario?.direccion || "—"}
+                      <span className="direccion-cell" data-label="Dirección">
+                        {entrega?.Beneficiario?.direccion ??
+                          entrega?.beneficiario?.direccion ??
+                          entrega?.direccion ??
+                          "—"}
                       </span>
 
-                      <span className="producto-cell">
+                      <span className="telefono-cell" data-label="Teléfono">
+                        {entrega?.Beneficiario?.telefono ??
+                          entrega?.beneficiario?.telefono ??
+                          entrega?.telefono ??
+                          "—"}
+                      </span>
+
+                      <span className="producto-cell" data-label="Producto">
                         {entrega?.Productos?.map((p) => p.nombre).join(", ") ||
                           "Sin producto"}
                       </span>
 
-                      <span className="cantidad-cell">
+                      <span className="cantidad-cell" data-label="Cantidad">
                         {entrega?.Productos?.[0]?.EntregaProducto?.cantidad ||
                           entrega?.Productos?.length ||
                           0}
                       </span>
 
-                      <span className="fecha-cell">
+                      <span className="fecha-cell" data-label="Fecha">
                         {entrega.fecha
                           ? new Date(entrega.fecha).toLocaleDateString()
                           : "Sin fecha"}
@@ -343,16 +367,25 @@ function Entregas() {
                 )}
               </div>
             </div>
+          </div>
+        </div>
+      </div>
 
-            {/* FORM */}
-            <div className="entrega-form-card">
+      {/* MODAL */}
+      {modalOpen && (
+        <div className="modal-overlay" onClick={() => setModalOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setModalOpen(false)}>
+              <X size={18} />
+            </button>
+
+            <div className="modal-content">
               <div className="form-title">
                 <Package size={18} />
                 <h2>Nueva Entrega</h2>
               </div>
 
               <form onSubmit={handleSubmit} className="entrega-form">
-                {/* BENEFICIARIO */}
                 <div className="form-group">
                   <label>Beneficiario</label>
                   <input
@@ -366,7 +399,38 @@ function Entregas() {
                   />
                 </div>
 
-                {/* PRODUCTO */}
+                <div className="form-group">
+                  <label>Teléfono</label>
+                  <div className="date-input-wrapper">
+                    <Phone size={16} />
+                    <input
+                      type="text"
+                      name="beneficiario_telefono"
+                      className="text-input"
+                      placeholder="Teléfono del beneficiario"
+                      value={formData.beneficiario_telefono}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Dirección</label>
+                  <div className="date-input-wrapper">
+                    <MapPin size={16} />
+                    <input
+                      type="text"
+                      name="beneficiario_direccion"
+                      className="text-input"
+                      placeholder="Dirección del beneficiario"
+                      value={formData.beneficiario_direccion}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+
                 <div className="form-group">
                   <label>Producto</label>
                   <CustomSelect
@@ -388,7 +452,6 @@ function Entregas() {
                   )}
                 </div>
 
-                {/* CANTIDAD */}
                 {formData.producto_id && (
                   <div className="form-group">
                     <label>Cantidad a entregar</label>
@@ -397,10 +460,11 @@ function Entregas() {
                         type="button"
                         className="cantidad-btn"
                         onClick={() => handleCantidadChange(-1)}
-                        disabled={formData.cantidad <= 1}
+                        disabled={Number(formData.cantidad) <= 1}
                       >
                         <Minus size={14} />
                       </button>
+
                       <input
                         type="number"
                         className="cantidad-input"
@@ -409,13 +473,14 @@ function Entregas() {
                         value={formData.cantidad}
                         onChange={handleCantidadInput}
                       />
+
                       <button
                         type="button"
                         className="cantidad-btn"
                         onClick={() => handleCantidadChange(1)}
                         disabled={
-                          formData.cantidad >=
-                          (productoSeleccionado?.cantidad || 1)
+                          Number(formData.cantidad) >=
+                          Number(productoSeleccionado?.cantidad || 1)
                         }
                       >
                         <Plus size={14} />
@@ -424,7 +489,6 @@ function Entregas() {
                   </div>
                 )}
 
-                {/* FECHA */}
                 <div className="form-group">
                   <label>Fecha</label>
                   <div className="date-input-wrapper">
@@ -452,7 +516,7 @@ function Entregas() {
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
