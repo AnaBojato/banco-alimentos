@@ -23,12 +23,10 @@ function Inicio() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Mantenemos la estructura de estados limpia
   const [stats, setStats] = useState({
     totalProductos: 0,
-    productosPorVencer: 0,
+    totalUsuarios: 0,
     stockBajo: 0,
-    totalDonaciones: 0,
   });
 
   const today = new Date().toLocaleDateString("es-ES", {
@@ -38,64 +36,70 @@ function Inicio() {
   });
 
   useEffect(() => {
-    const cargarDatosDesdeInventario = async () => {
+    const cargarDatos = async () => {
       try {
         const token = localStorage.getItem("token");
 
-        // 1. LLAMAMOS AL ENDPOINT DE PRODUCTOS/INVENTARIO (El que sí funciona)
-        const response = await fetch("http://localhost:3000/api/productos", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        // PRODUCTOS
+        const productosResponse = await fetch(
+          "http://localhost:3000/api/productos",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-        if (!response.ok) {
+        if (!productosResponse.ok) {
           throw new Error("No se pudo conectar al inventario");
         }
 
-        const productos = await response.json(); 
-        // Nota: Si tu API de productos devuelve un objeto como { data: [...] }, cambia la línea de abajo por: const lista = productos.data || [];
-        const lista = Array.isArray(productos) ? productos : [];
+        const productos = await productosResponse.json();
+        const listaProductos = Array.isArray(productos) ? productos : [];
 
-        // 2. CALCULAMOS LAS MÉTRICAS EN TIEMPO REAL DESDE EL FRONTEND
-        
-        // A. Total Productos
-        const total = lista.length;
+        const totalProductos = listaProductos.length;
 
-        // B. Stock Bajo (Menos o igual a 10 unidades)
-        const bajos = lista.filter(p => parseFloat(p.cantidad) <= 10).length;
+        const stockBajo = listaProductos.filter(
+          (p) => parseFloat(p.cantidad) <= 10
+        ).length;
 
-        // C. Productos por vencer en los próximos 7 días
-        const hoy = new Date();
-        const limiteVencimiento = new Date();
-        limiteVencimiento.setDate(hoy.getDate() + 7);
+        // USUARIOS
+        let totalUsuarios = 0;
 
-        const porVencer = lista.filter(p => {
-          if (!p.fecha_vencimiento) return false;
-          const fechaProd = new Date(p.fecha_vencimiento);
-          return fechaProd >= hoy && fechaProd <= limiteVencimiento;
-        }).length;
+        const usuariosResponse = await fetch(
+          "http://localhost:3000/api/usuarios",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-        // 3. ACTUALIZAMOS EL ESTADO
+        if (usuariosResponse.ok) {
+          const usuarios = await usuariosResponse.json();
+          totalUsuarios = usuarios.length;
+        }
+
         setStats({
-          totalProductos: total,
-          productosPorVencer: porVencer,
-          stockBajo: bajos,
-          totalDonaciones: 0, // Lo dejamos en 0 de respaldo para que no rompa la tarjeta
+          totalProductos,
+          totalUsuarios,
+          stockBajo,
         });
-
       } catch (error) {
-        console.error("⚠️ Falló la simulación de reportes en el front:", error);
+        console.error("⚠️ Error cargando dashboard:", error);
       }
     };
 
-    cargarDatosDesdeInventario();
+    cargarDatos();
   }, []);
 
   return (
     <div className="dashboard-layout">
       <Sidebar />
-      <MobileSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <MobileSidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
       <div className="dashboard-main">
         <Navbar openSidebar={() => setSidebarOpen(true)}>
@@ -111,33 +115,33 @@ function Inicio() {
         <div className="dashboard-content">
           <div className="dashboard-header">
             <div>
-              <h1 className="dashboard-title">Bienvenido al Sistema</h1>
+              <h1 className="dashboard-title">
+                Bienvenido al Sistema
+              </h1>
               <p className="dashboard-subtitle">
                 Panel de control de recursos y logística humanitaria.
               </p>
             </div>
+
             <div className="dashboard-date">
               <Calendar size={15} />
               {today}
             </div>
           </div>
 
-          {/* TARJETAS CALCULADAS DESDE EL FRONTEND */}
           <div className="dashboard-cards">
             <DashboardCard
               title="Total Productos"
-              value={stats.totalProductos} // <--- ¡Aquí se verán tus 23 productos!
+              value={stats.totalProductos}
               subtitle="Items en inventario"
               icon={<Package size={22} />}
-              iconClass=""
-              badgeClass=""
             />
 
             <DashboardCard
-              title="Próximos a Vencer"
-              value={stats.productosPorVencer}
-              subtitle="Límite: 7 días"
-              icon={<TriangleAlert size={22} />}
+              title="Total Usuarios"
+              value={stats.totalUsuarios}
+              subtitle="Usuarios registrados"
+              icon={<HandHeart size={22} />}
               iconClass="orange"
               badgeClass="warning"
             />
@@ -164,6 +168,7 @@ function Inicio() {
                 icon={<Package size={22} />}
                 route="/inventario"
               />
+
               <QuickActionCard
                 title="Entregas"
                 action="Registrar"
