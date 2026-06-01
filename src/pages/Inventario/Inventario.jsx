@@ -41,29 +41,21 @@ function Inventario() {
     try {
       const productos = await obtenerProductos();
 
+      console.log("PRODUCTOS:", productos);
+
       const productosFormateados = productos.map(
         (producto) => {
-          const hoy = new Date();
-
-          const vencimiento = producto.fecha_vencimiento
-            ? new Date(producto.fecha_vencimiento)
-            : null;
-
           let status = "ok";
 
-          if (vencimiento) {
-            const diferenciaDias =
-              Math.ceil(
-                (vencimiento - hoy) /
-                  (1000 * 60 * 60 * 24)
-              );
+          const rawFechaVencimiento =
+            producto.fecha_vencimiento;
 
-            if (diferenciaDias < 0) {
-              status = "danger";
-            } else if (diferenciaDias <= 7) {
-              status = "warning";
-            }
-          }
+          const expirationDate =
+            rawFechaVencimiento
+              ? new Date(
+                  rawFechaVencimiento
+                ).toLocaleDateString("es-CO")
+              : "N/A";
 
           return {
             id: producto.id,
@@ -85,14 +77,6 @@ function Inventario() {
                   producto.createdAt
                 ).toLocaleDateString("es-CO")
               : "-",
-            expirationDate:
-              producto.fecha_vencimiento
-                ? new Date(
-                    producto.fecha_vencimiento
-                  ).toLocaleDateString(
-                    "es-CO"
-                  )
-                : "N/A",
             status,
           };
         }
@@ -206,14 +190,13 @@ function Inventario() {
             <div>
 
               <h1>
-                Inventario y Vencimientos
+                Inventario
               </h1>
 
               <p>
                 Gestión integral de
-                suministros y control
-                preventivo de caducidad
-                de alimentos.
+                suministros y productos
+                almacenados.
               </p>
 
             </div>
@@ -284,10 +267,6 @@ function Inventario() {
                 Fecha Donación
               </span>
 
-              <span>
-                Fecha Vencimiento
-              </span>
-
               <span>Estado</span>
 
             </div>
@@ -350,12 +329,6 @@ function Inventario() {
 
                     <span>
                       {item.donationDate}
-                    </span>
-
-                    {/* EXPIRATION */}
-
-                    <span>
-                      {item.expirationDate}
                     </span>
 
                     {/* STATUS */}
