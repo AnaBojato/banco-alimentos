@@ -43,48 +43,36 @@ function Inventario() {
 
       console.log("PRODUCTOS:", productos);
 
-      const productosFormateados = productos.map(
-        (producto) => {
-          let status = "ok";
+      const productosFormateados = productos.map((producto) => ({
+        id: producto.id,
+        name: producto.nombre,
+        quantity: producto.cantidad,
+        unit: "unidades",
+        type:
+          producto.tipo === "no_perecedero"
+            ? "No Perecedero"
+            : "Perecedero",
+        donationDate: producto.createdAt
+          ? new Date(producto.createdAt).toLocaleDateString("es-CO")
+          : "-",
+        status: "ok",
+      }));
 
-          const rawFechaVencimiento =
-            producto.fecha_vencimiento;
-
-          const expirationDate =
-            rawFechaVencimiento
-              ? new Date(
-                  rawFechaVencimiento
-                ).toLocaleDateString("es-CO")
-              : "N/A";
-
-          return {
-            id: producto.id,
-            name: producto.nombre,
-            image:
-              "https://via.placeholder.com/80",
-            category:
-              producto.categoria ||
-              "Sin categoría",
-            quantity: producto.cantidad,
-            unit: "unidades",
-            type:
-              producto.tipo ===
-              "no_perecedero"
-                ? "No Perecedero"
-                : "Perecedero",
-            donationDate: producto.createdAt
-              ? new Date(
-                  producto.createdAt
-                ).toLocaleDateString("es-CO")
-              : "-",
-            status,
-          };
-        }
+      // Agrupar por nombre + tipo y sumar cantidades
+      const agrupados = Object.values(
+        productosFormateados.reduce((acc, item) => {
+          const key = `${item.name}-${item.type}`;
+          if (acc[key]) {
+            acc[key].quantity += item.quantity;
+            acc[key].donationDate = item.donationDate;
+          } else {
+            acc[key] = { ...item };
+          }
+          return acc;
+        }, {})
       );
 
-      setInventoryData(
-        productosFormateados
-      );
+      setInventoryData(agrupados);
     } catch (error) {
       console.error(
         "Error al cargar productos:",
@@ -218,9 +206,7 @@ function Inventario() {
                 </h2>
 
                 <span>
-                  {
-                    inventarioFiltrado.length
-                  }{" "}
+                  {inventarioFiltrado.length}{" "}
                   productos
                 </span>
 
@@ -237,9 +223,7 @@ function Inventario() {
                   placeholder="Buscar producto..."
                   value={search}
                   onChange={(e) =>
-                    setSearch(
-                      e.target.value
-                    )
+                    setSearch(e.target.value)
                   }
                 />
 
@@ -253,19 +237,11 @@ function Inventario() {
 
               <span>Producto</span>
 
-              <span>
-                Categoría
-              </span>
-
-              <span>
-                Cantidad
-              </span>
+              <span>Cantidad</span>
 
               <span>Tipo</span>
 
-              <span>
-                Fecha Donación
-              </span>
+              <span>Fecha Donación</span>
 
               <span>Estado</span>
 
@@ -280,7 +256,7 @@ function Inventario() {
 
                   <div
                     className="inventario-row"
-                    key={item.id}
+                    key={`${item.name}-${item.type}`}
                   >
 
                     {/* PRODUCTO */}
@@ -293,19 +269,9 @@ function Inventario() {
                           {item.name}
                         </h4>
 
-                        <span>
-                          ID: {item.id}
-                        </span>
-
                       </div>
 
                     </div>
-
-                    {/* CATEGORY */}
-
-                    <span>
-                      {item.category}
-                    </span>
 
                     {/* QUANTITY */}
 
