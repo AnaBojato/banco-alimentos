@@ -86,19 +86,17 @@
   width: 220px;
 }
 
-/* TABLE */
+/* TABLE — ahora 5 columnas (sin Categoría) */
 
 .inventario-table-head,
 .inventario-row {
   display: grid;
   grid-template-columns:
-    1.5fr
-    1fr
+    2fr
     1fr
     1fr
     1.2fr
-    1.2fr
-    0.7fr;
+    0.8fr;
 
   gap: 16px;
   align-items: center;
@@ -150,12 +148,6 @@
 .producto-cell span {
   color: #6b7280;
   font-size: 12px;
-
-}
-
-.producto-cell span {
-  font-size: 12px;
-  color: #6b7280;
 }
 
 /* STATUS */
@@ -197,7 +189,7 @@
 
   .inventario-table-head,
   .inventario-row {
-    min-width: 1100px;
+    min-width: 800px;
   }
 
 }
