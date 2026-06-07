@@ -179,20 +179,9 @@
   color: #991b1b;
 }
 
+/* ========================================= */
 /* RESPONSIVE */
-
-@media (max-width: 1200px) {
-
-  .inventario-card {
-    overflow-x: auto;
-  }
-
-  .inventario-table-head,
-  .inventario-row {
-    min-width: 800px;
-  }
-
-}
+/* ========================================= */
 
 @media (max-width: 768px) {
 
@@ -203,18 +192,131 @@
   .inventario-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
+  }
+
+  .inventario-header h1 {
+    font-size: 24px;
+  }
+
+  .inventario-header p {
+    font-size: 13px;
+  }
+
+  .inventario-btn-primary {
+    width: 100%;
+  }
+
+  .inventario-table-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
   }
 
   .table-search {
     width: 100%;
+    margin-top: 12px;
   }
 
-  .table-search input {
+  .inventario-table-head {
+    display: none;
+  }
+
+  .inventario-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+    gap: 8px;
+    margin: 0;
+    border: none;
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: 0;
+  }
+
+  .producto-cell {
     width: 100%;
+    margin-bottom: 4px;
   }
 
+  .inventario-row span[data-label] {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font-size: 13px;
+  }
+
+  .inventario-row span[data-label]::before {
+    content: attr(data-label) ": ";
+    font-weight: 600;
+    color: #4b5563;
+    display: inline-block;
+    margin-right: 6px;
+  }
+
+  .modal-overlay {
+    padding: 0;
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  .modal {
+    width: 90%;
+    height: 100%;
+    max-height: 90%;
+    min-height: 90vh;
+    border-radius: 0;
+    padding: 20px 16px;
+  }
+
+  .modal-close {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    z-index: 10;
+  }
 }
 
+@media (max-width: 500px) {
+
+  .inventario-pagination {
+    gap: 6px;
+  }
+
+  .inventario-pagination button {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .inventario-content {
+    padding: 12px;
+  }
+
+  .inventario-header h1 {
+    font-size: 20px;
+  }
+
+  .inventario-table-header {
+    padding: 12px;
+  }
+
+  .modal {
+    padding: 16px 12px;
+  }
+
+  .modal-close {
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+  }
+}
 .donar-btn {
   height: 48px;
   padding: 0 18px;
@@ -408,3 +510,41 @@
   font-weight: 600;
   color: #374151;
 }
+
+/* ========================================= */
+/* ESTADOS DE CARGA Y TABLA VACÍA */
+/* ========================================= */
+
+.usuarios-table-loading,
+.usuarios-table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  gap: 16px;
+  color: #6b7280;
+  font-size: 15px;
+  font-weight: 500;
+  width: 100%;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #166534;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+

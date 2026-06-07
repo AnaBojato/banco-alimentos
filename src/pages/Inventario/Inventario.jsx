@@ -69,6 +69,8 @@ function Inventario() {
 
   const [inventoryData, setInventoryData] = useState([]);
 
+  const [loadingProductos, setLoadingProductos] = useState(true);
+
   const [paginaActual, setPaginaActual] = useState(1);
 
   const productosPorPagina = 10;
@@ -78,6 +80,8 @@ function Inventario() {
   }, []);
 
   const cargarProductos = async () => {
+    setLoadingProductos(true);
+
     try {
       const productos = await obtenerProductos();
 
@@ -98,26 +102,27 @@ function Inventario() {
         status: "ok",
       }));
 
-      // Agrupar por nombre + tipo y sumar cantidades
       const agrupados = Object.values(
         productosFormateados.reduce((acc, item) => {
           const key = `${item.name}-${item.type}`;
+
           if (acc[key]) {
             acc[key].quantity += item.quantity;
             acc[key].donationDate = item.donationDate;
           } else {
             acc[key] = { ...item };
           }
+
           return acc;
         }, {})
       );
 
       setInventoryData(agrupados);
     } catch (error) {
-      console.error(
-        "Error al cargar productos:",
-        error
-      );
+      console.error("Error al cargar productos:", error);
+      setInventoryData([]);
+    } finally {
+      setLoadingProductos(false);
     }
   };
 
@@ -358,16 +363,10 @@ function Inventario() {
                   type="text"
                   placeholder="Buscar producto..."
                   value={search}
-
-                  onChange={(e) =>
-                    setSearch(e.target.value)
-                  }
-
                   onChange={(e) => {
                     setSearch(e.target.value);
                     setPaginaActual(1);
                   }}
-
                 />
 
               </div>
@@ -394,71 +393,49 @@ function Inventario() {
 
             <div className="inventario-table-body">
 
-              {productosPaginados.map(
-                (item) => (
+            {loadingProductos ? (
 
+              <div className="usuarios-table-loading">
+                <div className="loading-spinner"></div>
+                <span>Cargando datos...</span>
+              </div>
+
+            ) : productosPaginados.length === 0 ? (
+
+              <div className="usuarios-table-empty">
+                <span>No se encontraron productos registrados.</span>
+              </div>
+
+) : (
+                productosPaginados.map((item) => (
                   <div
                     className="inventario-row"
                     key={`${item.name}-${item.type}`}
                   >
-
-                    {/* PRODUCTO */}
-
                     <div className="producto-cell">
-
                       <div>
-
-                        <h4>
-                          {item.name}
-                        </h4>
-
+                        <h4>{item.name}</h4>
                       </div>
-
                     </div>
 
-                    {/* QUANTITY */}
-
-                    <span>
-
-                      <strong>
-                        {item.quantity}
-                      </strong>{" "}
-
-                      {item.unit}
-
+                    <span data-label="Cantidad">
+                      <strong>{item.quantity}</strong> {item.unit}
                     </span>
 
-                    {/* TYPE */}
+                    <span data-label="Tipo">{item.type}</span>
 
-                    <span>
-                      {item.type}
-                    </span>
+                    <span data-label="Fecha Donación">{item.donationDate}</span>
 
-                    {/* DONATION */}
-
-                    <span>
-                      {item.donationDate}
-                    </span>
-
-                    {/* STATUS */}
-
-                    <span>
-
-                      {getStatusBadge(
-                        item.status
-                      )}
-
-                    </span>
-
+                    <span data-label="Estado">{getStatusBadge(item.status)}</span>
                   </div>
-
-                )
+                ))
               )}
 
             </div>
 
-            <div className="inventario-pagination">
-              <button
+            {!loadingProductos && totalPaginas > 0 && (
+              <div className="inventario-pagination">
+                <button
                 type="button"
                 className="inventario-btn-secondary"
                 disabled={paginaActual === 1}
@@ -488,6 +465,7 @@ function Inventario() {
                 Siguiente
               </button>
             </div>
+            )}
 
           </div>
 

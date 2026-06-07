@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import { UserPlus } from "lucide-react";
+import { UserPlus, Search } from "lucide-react";
 
 import api from "../../api/api";
 
@@ -314,23 +314,6 @@ function Usuarios() {
 
           </div>
 
-          {/* BUSCADOR */}
-          <div className="usuarios-search-box">
-
-            <input
-              type="text"
-              placeholder="Buscar usuario..."
-              value={search}
-              onChange={(e) =>
-                setSearch(
-                  e.target.value
-                )
-              }
-              className="usuarios-search-input"
-            />
-
-          </div>
-
           <div className="usuarios-grid">
 
             {/* TABLA */}
@@ -338,16 +321,35 @@ function Usuarios() {
 
               <div className="usuarios-table-header">
 
-                <h2>
-                  Listado de Personal
-                </h2>
+                <div className="usuarios-table-title">
 
-                <span>
-                  {
-                    filteredUsuarios.length
-                  }{" "}
-                  Total
-                </span>
+                  <h2>
+                    Listado de Personal
+                  </h2>
+
+                  <span className="usuarios-total">
+                    {
+                      filteredUsuarios.length
+                    }{" "}
+                    usuarios
+                  </span>
+
+                </div>
+
+                <div className="table-search">
+
+                  <Search size={15} />
+
+                  <input
+                    type="text"
+                    placeholder="Buscar usuario..."
+                    value={search}
+                    onChange={(e) =>
+                      setSearch(e.target.value)
+                    }
+                  />
+
+                </div>
 
               </div>
 
