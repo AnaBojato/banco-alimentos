@@ -1,7 +1,7 @@
 .usuarios-layout{
   display:flex;
   min-height:100vh;
-  background:#f5f7f6;
+  background:#f5f7fb;
 }
 
 .usuarios-main{
@@ -254,7 +254,7 @@
 }
 
 .save-user-btn:hover{
-  background:#14532d;
+  background:#2e7d32;
 }
 
 .save-user-btn:disabled{
@@ -355,5 +355,91 @@
   .usuarios-table-card,
   .usuarios-form-card{
     padding:20px;
+  }
+}
+.usuarios-btn-primary{
+  height:48px;
+  padding:0 18px;
+  border:none;
+  border-radius:14px;
+  background:#22c55e;
+  color:white;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.usuarios-btn-primary:hover{
+  background:#14532d;
+}
+
+.usuarios-modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  padding:20px;
+}
+
+.usuarios-modal{
+  background:white;
+  width:100%;
+  max-width:550px;
+  border-radius:24px;
+  padding:26px;
+  position:relative;
+  max-height:90vh;
+  overflow-y:auto;
+}
+
+.usuarios-modal-close{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:38px;
+  height:38px;
+  border:none;
+  border-radius:10px;
+  background:#f3f4f6;
+  cursor:pointer;
+}
+
+.usuarios-modal-close:hover{
+  background:#e5e7eb;
+}
+
+.usuarios-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.usuarios-grid {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .usuarios-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .usuarios-btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .usuarios-modal {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100vh;
+    border-radius: 0;
   }
 }

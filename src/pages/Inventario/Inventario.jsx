@@ -1,9 +1,15 @@
 import "./inventario.css";
 import { useState, useEffect } from "react";
 import { obtenerProductos } from "../../services/productoService";
+import { crearDonacion } from "../../services/donationService";
 
 import {
   Search,
+  Gift,
+  Shield,
+  ChevronDown,
+  Send,
+  X,
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
@@ -27,11 +33,45 @@ function Inventario() {
   const [search, setSearch] =
     useState("");
 
+  const [modalOpen, setModalOpen] =
+    useState(false);
+
+  const [producto, setProducto] =
+    useState("");
+
+  const [tipo, setTipo] =
+    useState("");
+
+  const [cantidad, setCantidad] =
+    useState("");
+
+  const [unidad, setUnidad] =
+    useState("kg");
+
+  const [nombre, setNombre] =
+    useState("");
+
+  const [correo, setCorreo] =
+    useState("");
+
+  const [telefono, setTelefono] =
+    useState("");
+
+  const [direccion, setDireccion] =
+    useState("");
+
+  const [errores, setErrores] =
+    useState({});
+
   // ============================================
   // DATA
   // ============================================
 
   const [inventoryData, setInventoryData] = useState([]);
+
+  const [paginaActual, setPaginaActual] = useState(1);
+
+  const productosPorPagina = 10;
 
   useEffect(() => {
     cargarProductos();
@@ -127,6 +167,91 @@ function Inventario() {
         .includes(search.toLowerCase())
     );
 
+  const totalPaginas = Math.ceil(
+    inventarioFiltrado.length /
+      productosPorPagina
+  );
+
+  const indiceInicial =
+    (paginaActual - 1) * productosPorPagina;
+
+  const productosPaginados =
+    inventarioFiltrado.slice(
+      indiceInicial,
+      indiceInicial + productosPorPagina
+    );
+
+  const handleDonacion = async () => {
+
+    const nuevosErrores = {};
+
+    if (!producto.trim()) {
+      nuevosErrores.producto =
+        "El producto es obligatorio";
+    }
+
+    if (!tipo) {
+      nuevosErrores.tipo =
+        "Selecciona un tipo";
+    }
+
+    if (!cantidad || Number(cantidad) <= 0) {
+      nuevosErrores.cantidad =
+        "Ingresa una cantidad válida";
+    }
+
+    setErrores(nuevosErrores);
+
+    if (Object.keys(nuevosErrores).length > 0) {
+      return;
+    }
+
+    try {
+
+      const donacionData = {
+        producto,
+        tipo,
+        cantidad: Number(cantidad),
+        unidad,
+        donante: nombre
+          ? {
+              nombre_completo: nombre,
+              correo,
+              telefono,
+              direccion,
+            }
+          : null,
+      };
+
+      await crearDonacion(donacionData);
+
+      alert(
+        "Donación registrada correctamente"
+      );
+
+      setProducto("");
+      setTipo("");
+      setCantidad("");
+      setUnidad("kg");
+      setNombre("");
+      setCorreo("");
+      setTelefono("");
+      setDireccion("");
+      setErrores({});
+      setModalOpen(false);
+
+      cargarProductos();
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Error al registrar la donación"
+      );
+    }
+  };
+
   return (
 
     <div className="inventario-layout">
@@ -189,6 +314,17 @@ function Inventario() {
 
             </div>
 
+            <button
+              type="button"
+              className="inventario-btn-primary"
+              onClick={() =>
+                setModalOpen(true)
+              }
+            >
+              <Gift size={16} />
+              Registrar Donación
+            </button>
+
           </div>
 
           {/* TABLE CARD */}
@@ -222,9 +358,16 @@ function Inventario() {
                   type="text"
                   placeholder="Buscar producto..."
                   value={search}
+
                   onChange={(e) =>
                     setSearch(e.target.value)
                   }
+
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPaginaActual(1);
+                  }}
+
                 />
 
               </div>
@@ -251,7 +394,7 @@ function Inventario() {
 
             <div className="inventario-table-body">
 
-              {inventarioFiltrado.map(
+              {productosPaginados.map(
                 (item) => (
 
                   <div
@@ -314,11 +457,171 @@ function Inventario() {
 
             </div>
 
+            <div className="inventario-pagination">
+              <button
+                type="button"
+                className="inventario-btn-secondary"
+                disabled={paginaActual === 1}
+                onClick={() =>
+                  setPaginaActual(
+                    paginaActual - 1
+                  )
+                }
+              >
+                Anterior
+              </button>
+
+              <span className="inventario-pagination-label">
+                Página {paginaActual} de {totalPaginas || 1}
+              </span>
+
+              <button
+                type="button"
+                className="inventario-btn-secondary"
+                disabled={paginaActual === totalPaginas || totalPaginas === 0}
+                onClick={() =>
+                  setPaginaActual(
+                    paginaActual + 1
+                  )
+                }
+              >
+                Siguiente
+              </button>
+            </div>
+
           </div>
 
         </div>
 
       </div>
+
+      {modalOpen && (
+        <div
+          className="modal-overlay"
+          onClick={() => setModalOpen(false)}
+        >
+          <div
+            className="modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="modal-close"
+              onClick={() => setModalOpen(false)}
+            >
+              <X size={18} />
+            </button>
+
+            <div className="inventario-modal-header">
+              <h2>Registrar Donación</h2>
+            </div>
+
+            <div className="inventario-modal-body">
+              <div className="inventario-form-group">
+                <label>Producto</label>
+                <input
+                  type="text"
+                  value={producto}
+                  onChange={(e) => setProducto(e.target.value)}
+                  placeholder="Ej. Arroz, leche, etc."
+                />
+                {errores.producto && (
+                  <span className="inventario-error-text">{errores.producto}</span>
+                )}
+              </div>
+
+              <div className="inventario-form-group">
+                <label>Tipo</label>
+                <select
+                  value={tipo}
+                  onChange={(e) => setTipo(e.target.value)}
+                >
+                  <option value="">Seleccionar</option>
+                  <option value="perecedero">Perecedero</option>
+                  <option value="no_perecedero">No Perecedero</option>
+                </select>
+                {errores.tipo && (
+                  <span className="inventario-error-text">{errores.tipo}</span>
+                )}
+              </div>
+
+              <div className="inventario-form-group">
+                <label>Cantidad</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={cantidad}
+                  onChange={(e) => setCantidad(e.target.value)}
+                  placeholder="Ej. 10"
+                />
+                {errores.cantidad && (
+                  <span className="inventario-error-text">{errores.cantidad}</span>
+                )}
+              </div>
+
+              <div className="inventario-form-group">
+                <label>Unidad</label>
+                <select
+                  value={unidad}
+                  onChange={(e) => setUnidad(e.target.value)}
+                >
+                  <option value="kg">kg</option>
+                  <option value="unidades">unidades</option>
+                  <option value="litros">litros</option>
+                </select>
+              </div>
+
+              <div className="inventario-form-group">
+                <label>Nombre (Opcional)</label>
+                <input
+                  type="text"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                  placeholder="Nombre del donante"
+                />
+              </div>
+
+              <div className="inventario-form-group">
+                <label>Correo</label>
+                <input
+                  type="email"
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
+                  placeholder="correo@ejemplo.com"
+                />
+              </div>
+
+              <div className="inventario-form-group">
+                <label>Teléfono</label>
+                <input
+                  type="text"
+                  value={telefono}
+                  onChange={(e) => setTelefono(e.target.value)}
+                  placeholder="Número de contacto"
+                />
+              </div>
+
+              <div className="inventario-form-group">
+                <label>Dirección</label>
+                <input
+                  type="text"
+                  value={direccion}
+                  onChange={(e) => setDireccion(e.target.value)}
+                  placeholder="Dirección del donante"
+                />
+              </div>
+
+              <button
+                type="button"
+                className="inventario-btn-primary inventario-submit-btn"
+                onClick={handleDonacion}
+              >
+                Registrar Donación
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
 

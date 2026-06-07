@@ -47,6 +47,9 @@ function Usuarios() {
   const [search, setSearch] =
     useState("");
 
+  const [modalOpen, setModalOpen] =
+    useState(false);
+
   const [formData, setFormData] =
     useState({
       nombre_completo: "",
@@ -207,6 +210,7 @@ function Usuarios() {
       });
 
       fetchUsuarios();
+      setModalOpen(false);
 
     } catch (err) {
 
@@ -271,11 +275,21 @@ function Usuarios() {
               </h1>
 
               <p>
-                Administra los permisos
-                y accesos del personal.
+                Administra los permisos y accesos del personal.
               </p>
 
             </div>
+
+            <button
+              type="button"
+              className="usuarios-btn-primary"
+              onClick={() =>
+                setModalOpen(true)
+              }
+            >
+              <UserPlus size={16} />
+              Nuevo Usuario
+            </button>
 
           </div>
 
@@ -387,157 +401,115 @@ function Usuarios() {
 
             </div>
 
-            {/* FORM */}
-            <div className="usuarios-form-card">
-
-              <div className="usuarios-form-title">
-
-                <UserPlus size={20} />
-
-                <h2>
-                  Nuevo Usuario
-                </h2>
-
-              </div>
-
-              <form
-                onSubmit={handleSubmit}
-                className="usuarios-form"
-              >
-
-                <div className="form-group">
-
-                  <label>
-                    Nombre Completo
-                  </label>
-
-                  <input
-                    type="text"
-                    name="nombre_completo"
-                    value={
-                      formData.nombre_completo
-                    }
-                    onChange={handleChange}
-                    placeholder="Ingrese su nombre completo"
-                    required
-                  />
-
-                </div>
-
-                <div className="form-group">
-
-                  <label>
-                    Correo Electrónico
-                  </label>
-
-                  <input
-                    type="email"
-                    name="correo"
-                    value={
-                      formData.correo
-                    }
-                    onChange={handleChange}
-                    placeholder="ejemplo@email.com"
-                    required
-                  />
-
-                </div>
-
-                <div className="form-group">
-
-                  <label>
-                    Teléfono
-                  </label>
-
-                  <input
-                    type="text"
-                    name="telefono"
-                    value={
-                      formData.telefono
-                    }
-                    onChange={handleChange}
-                    placeholder="Ingrese su número"
-                    required
-                  />
-
-                </div>
-
-                <div className="form-group">
-
-                  <label>
-                    Rol del Sistema
-                  </label>
-
-                  <CustomSelect
-                    name="rol"
-                    options={
-                      ROL_OPTIONS
-                    }
-                    value={
-                      formData.rol
-                    }
-                    onChange={
-                      handleChange
-                    }
-                  />
-
-                </div>
-
-                {formData.rol ===
-                  "administrador" && (
-
-                  <div className="form-group">
-
-                    <label>
-                      Contraseña
-                    </label>
-
-                    <input
-                      type="password"
-                      name="password"
-                      value={
-                        formData.password
-                      }
-                      onChange={
-                        handleChange
-                      }
-                      placeholder="********"
-                      required
-                    />
-
-                  </div>
-
-                )}
-
-                {error && (
-
-                  <p className="form-error">
-                    {error}
-                  </p>
-
-                )}
-
-                <button
-                  type="submit"
-                  className="save-user-btn"
-                  disabled={loading}
-                >
-
-                  {loading
-                    ? "Guardando..."
-                    : "Guardar Usuario"}
-
-                </button>
-
-              </form>
-
-            </div>
 
           </div>
 
         </div>
 
       </div>
+
+      {modalOpen && (
+        <div
+          className="usuarios-modal-overlay"
+          onClick={() =>
+            setModalOpen(false)
+          }
+        >
+          <div
+            className="usuarios-modal"
+            onClick={(e) =>
+              e.stopPropagation()
+            }
+          >
+            <button
+              type="button"
+              className="usuarios-modal-close"
+              onClick={() =>
+                setModalOpen(false)
+              }
+            >
+              ✕
+            </button>
+
+            <h2>Nuevo Usuario</h2>
+
+            <form
+              onSubmit={handleSubmit}
+              className="usuarios-form"
+            >
+              <div className="form-group">
+                <label>Nombre Completo</label>
+                <input
+                  type="text"
+                  name="nombre_completo"
+                  value={formData.nombre_completo}
+                  onChange={handleChange}
+                  placeholder="Ingrese su nombre completo"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Correo Electrónico</label>
+                <input
+                  type="email"
+                  name="correo"
+                  value={formData.correo}
+                  onChange={handleChange}
+                  placeholder="ejemplo@email.com"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Teléfono</label>
+                <input
+                  type="text"
+                  name="telefono"
+                  value={formData.telefono}
+                  onChange={handleChange}
+                  placeholder="Ingrese su número"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Rol del Sistema</label>
+                <CustomSelect
+                  name="rol"
+                  options={ROL_OPTIONS}
+                  value={formData.rol}
+                  onChange={handleChange}
+                />
+              </div>
+
+              {formData.rol === "administrador" && (
+                <div className="form-group">
+                  <label>Contraseña</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="********"
+                    required
+                  />
+                </div>
+              )}
+
+              {error && <p className="form-error">{error}</p>}
+
+              <button
+                type="submit"
+                className="save-user-btn"
+                disabled={loading}
+              >
+                {loading ? "Guardando..." : "Guardar Usuario"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
 
