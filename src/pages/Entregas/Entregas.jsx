@@ -35,32 +35,94 @@ function Entregas() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const [entregas, setEntregas] = useState([]);
-  const [productos, setProductos] = useState([]);
+  const [productosRaw, setProductosRaw] = useState([]); // Array crudo de la base de datos
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const [formData, setFormData] = useState({
     beneficiario_nombre: "",
     beneficiario_telefono: "",
     beneficiario_direccion: "",
-    producto_id: "",
+    producto_id: "", // Guardará el "nombre" del producto unificado
     cantidad: 1,
     fecha: "",
   });
 
+  // ============================================
+  // AGRUPACIÓN DE PRODUCTOS REPETIDOS (COMO INVENTARIO)
+  // ============================================
+  const productosAgrupados = useMemo(() => {
+    const disponibles = productosRaw.filter(
+      (p) => p && p.id && p.nombre && Number(p.cantidad) > 0
+    );
+
+    const agrupados = disponibles.reduce((acc, item) => {
+      const key = item.nombre.trim().toLowerCase();
+      if (acc[key]) {
+        acc[key].cantidad += Number(item.cantidad);
+        acc[key].idsOriginales.push({ id: item.id, cantidad: Number(item.cantidad) });
+      } else {
+        acc[key] = {
+          nombre: item.nombre,
+          cantidad: Number(item.cantidad),
+          idsOriginales: [{ id: item.id, cantidad: Number(item.cantidad) }],
+        };
+      }
+      return acc;
+    }, {});
+
+    return Object.values(agrupados);
+  }, [productosRaw]);
+
+  // Encontrar el producto seleccionado por su nombre único
   const productoSeleccionado = useMemo(() => {
     if (!formData.producto_id) return null;
-    return productos.find((p) => String(p.id) === String(formData.producto_id));
-  }, [formData.producto_id, productos]);
+    return productosAgrupados.find(
+      (p) => p.nombre === formData.producto_id
+    );
+  }, [formData.producto_id, productosAgrupados]);
+
+  // Opciones limpias para el CustomSelect sin duplicados
+  const productoOptions = useMemo(() => {
+    return productosAgrupados.map((producto) => ({
+      value: producto.nombre,
+      label: `${producto.nombre} (${producto.cantidad} disponibles)`,
+    }));
+  }, [productosAgrupados]);
+
+  // ============================================
+  // CÁLCULO DE 3 DÍAS HÁBILES ANTERIORES PARA EL CALENDARIO
+  // ============================================
+  const limitesFecha = useMemo(() => {
+    const hoy = new Date();
+    
+    // Formatear max (hoy) a YYYY-MM-DD para el input tipo date
+    const maxDateStr = hoy.toISOString().split("T")[0];
+
+    // Calcular min (3 días hábiles atrás)
+    let diasPorRestar = 3;
+    const fechaMin = new Date(hoy);
+
+    while (diasPorRestar > 0) {
+      fechaMin.setDate(fechaMin.getDate() - 1);
+      const diaSemana = fechaMin.getDay(); // 0 = Domingo, 6 = Sábado
+      if (diaSemana !== 0 && diaSemana !== 6) {
+        diasPorRestar--;
+      }
+    }
+    const minDateStr = fechaMin.toISOString().split("T")[0];
+
+    return { min: minDateStr, max: maxDateStr };
+  }, []);
 
   const cargarProductos = async () => {
     try {
       const data = await obtenerProductos();
-      const disponibles = data.filter(
-        (p) => p && p.id && p.nombre && Number(p.cantidad) > 0
-      );
-      setProductos(disponibles);
+      setProductosRaw(data || []);
     } catch (err) {
       console.warn("Error cargando productos:", err);
-      setProductos([]);
+      setProductosRaw([]);
     }
   };
 
@@ -83,11 +145,6 @@ function Entregas() {
     cargarEntregas();
   }, []);
 
-  const productoOptions = productos.map((producto) => ({
-    value: producto.id,
-    label: `${producto.nombre} (${producto.cantidad || 0} disponibles)`,
-  }));
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -105,7 +162,6 @@ function Entregas() {
       Math.max(1, Number(formData.cantidad) + delta),
       stock
     );
-
     setFormData((prev) => ({ ...prev, cantidad: nuevaCantidad }));
   };
 
@@ -127,20 +183,8 @@ function Entregas() {
     setSaving(true);
     setError("");
 
-    if (!formData.beneficiario_nombre.trim()) {
-      setError("El nombre del beneficiario es requerido");
-      setSaving(false);
-      return;
-    }
-
-    if (!formData.beneficiario_telefono.trim()) {
-      setError("El teléfono del beneficiario es requerido");
-      setSaving(false);
-      return;
-    }
-
-    if (!formData.beneficiario_direccion.trim()) {
-      setError("La dirección del beneficiario es requerida");
+    if (!formData.beneficiario_nombre.trim() || !formData.beneficiario_telefono.trim() || !formData.beneficiario_direccion.trim()) {
+      setError("Todos los campos del beneficiario son obligatorios");
       setSaving(false);
       return;
     }
@@ -157,14 +201,15 @@ function Entregas() {
       return;
     }
 
-    const stock = Number(productoSeleccionado?.cantidad || 0);
-    if (Number(formData.cantidad) > stock) {
-      setError(`Solo hay ${stock} unidades disponibles`);
+    const stockTotal = Number(productoSeleccionado?.cantidad || 0);
+    if (Number(formData.cantidad) > stockTotal) {
+      setError(`Solo hay ${stockTotal} unidades disponibles en total`);
       setSaving(false);
       return;
     }
 
     try {
+      // 1. Crear o Registrar Beneficiario
       const resBeneficiario = await api.post("/api/beneficiarios", {
         nombre_completo: formData.beneficiario_nombre.trim(),
         telefono: formData.beneficiario_telefono.trim(),
@@ -173,27 +218,44 @@ function Entregas() {
       });
 
       const nuevoBeneficiarioId = resBeneficiario.data?.id;
-
       if (!nuevoBeneficiarioId) {
         throw new Error("El backend no devolvió el ID del nuevo beneficiario.");
       }
 
+      // 2. Repartir y rebajar en cascada la cantidad solicitada sobre los registros originales repetidos
+      let cantidadRestantePorEntregar = Number(formData.cantidad);
+      const productosParaEndpoints = [];
+
+      for (const item of productoSeleccionado.idsOriginales) {
+        if (cantidadRestantePorEntregar <= 0) break;
+
+        const aTomarDeEsteRegistro = Math.min(item.cantidad, cantidadRestantePorEntregar);
+        
+        productosParaEndpoints.push({
+          producto_id: item.id,
+          cantidad: aTomarDeEsteRegistro,
+          nuevaCantidadStock: item.cantidad - aTomarDeEsteRegistro
+        });
+
+        cantidadRestantePorEntregar -= aTomarDeEsteRegistro;
+      }
+
+      // 3. Crear el Registro de la Entrega Principal utilizando el ID primario del primer bloque encontrado
       await api.post("/api/entregas", {
         beneficiario_id: Number(nuevoBeneficiarioId),
         fecha: formData.fecha,
-        productos: [
-          {
-            producto_id: Number(formData.producto_id),
-            cantidad: Number(formData.cantidad),
-          },
-        ],
+        productos: productosParaEndpoints.map(p => ({
+          producto_id: p.producto_id,
+          cantidad: p.cantidad
+        })),
       });
 
-      const nuevaCantidad = stock - Number(formData.cantidad);
-
-      await api.put(`/api/productos/${formData.producto_id}`, {
-        cantidad: nuevaCantidad,
-      });
+      // 4. Actualizar stocks individuales concurrentemente en el inventario real
+      await Promise.all(
+        productosParaEndpoints.map(p =>
+          api.put(`/api/productos/${p.producto_id}`, { cantidad: p.nuevaCantidadStock })
+        )
+      );
 
       setFormData({
         beneficiario_nombre: "",
@@ -254,6 +316,23 @@ function Entregas() {
     });
   }, [search, entregas]);
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  
+  const currentItems = useMemo(() => {
+    return entregasFiltradas.slice(indexOfFirstItem, indexOfLastItem);
+  }, [entregasFiltradas, indexOfFirstItem, indexOfLastItem]);
+
+  const totalPages = Math.ceil(entregasFiltradas.length / itemsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
+
   return (
     <div className="entregas-layout">
       <Sidebar />
@@ -312,11 +391,16 @@ function Entregas() {
 
               <div className="entregas-table-body">
                 {loadingEntregas ? (
-                  <div className="empty-state">Cargando...</div>
-                ) : entregasFiltradas.length === 0 ? (
-                  <div className="empty-state">No hay entregas registradas</div>
+                  <div className="usuarios-table-loading">
+                    <div className="loading-spinner"></div>
+                    <span>Cargando datos...</span>
+                  </div>
+                ) : currentItems.length === 0 ? (
+                  <div className="usuarios-table-empty">
+                    <span>No se encontraron entregas registradas.</span>
+                  </div>
                 ) : (
-                  entregasFiltradas.map((entrega) => (
+                  currentItems.map((entrega) => (
                     <div className="entrega-row" key={entrega.id}>
                       <div className="beneficiario-cell">
                         <div className="beneficiario-avatar">
@@ -366,6 +450,43 @@ function Entregas() {
                   ))
                 )}
               </div>
+
+              {!loadingEntregas && totalPages > 1 && (
+                <div className="usuarios-pagination-container">
+                  <div className="usuarios-pagination-block">
+                    <button 
+                      type="button"
+                      onClick={prevPage} 
+                      disabled={currentPage === 1}
+                      className="pagination-arrow-btn"
+                    >
+                      &laquo; Anterior
+                    </button>
+                    
+                    <div className="pagination-numbers">
+                      {Array.from({ length: totalPages }, (_, index) => (
+                        <button
+                          type="button"
+                          key={index + 1}
+                          onClick={() => paginate(index + 1)}
+                          className={`pagination-number-btn ${currentPage === index + 1 ? 'active' : ''}`}
+                        >
+                          {index + 1}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button 
+                      type="button"
+                      onClick={nextPage} 
+                      disabled={currentPage === totalPages}
+                      className="pagination-arrow-btn"
+                    >
+                      Siguiente &raquo;
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -439,14 +560,14 @@ function Entregas() {
                     onChange={handleChange}
                     options={productoOptions}
                     placeholder={
-                      productos.length === 0
+                      productosAgrupados.length === 0
                         ? "No hay productos disponibles"
                         : "Seleccionar producto"
                     }
                   />
                   {productoSeleccionado && (
                     <span className="stock-hint">
-                      Stock disponible:{" "}
+                      Stock total disponible:{" "}
                       <strong>{productoSeleccionado.cantidad}</strong> unidades
                     </span>
                   )}
@@ -496,11 +617,14 @@ function Entregas() {
                     <input
                       type="date"
                       name="fecha"
+                      min={limitesFecha.min}
+                      max={limitesFecha.max}
                       value={formData.fecha}
                       onChange={handleChange}
                       required
                     />
                   </div>
+                  <span className="stock-hint">Permitido solo hasta 3 días hábiles anteriores.</span>
                 </div>
 
                 {error && <div className="form-error">{error}</div>}

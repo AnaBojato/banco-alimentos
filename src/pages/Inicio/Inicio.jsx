@@ -22,6 +22,11 @@ import "../Inicio/inicio.css";
 function Inicio() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // ============================================
+  // ESTADO DE CARGA PARA LAS TARJETAS
+  // ============================================
+  const [loading, setLoading] = useState(true);
 
   const [stats, setStats] = useState({
     totalProductos: 0,
@@ -37,6 +42,7 @@ function Inicio() {
 
   useEffect(() => {
     const cargarDatos = async () => {
+      setLoading(true); // Iniciamos la carga
       try {
         const token = localStorage.getItem("token");
 
@@ -87,11 +93,21 @@ function Inicio() {
         });
       } catch (error) {
         console.error("⚠️ Error cargando dashboard:", error);
+      } finally {
+        setLoading(false); // Finalizamos la carga pase lo que pase
       }
     };
 
     cargarDatos();
   }, []);
+
+  // Pequeño componente visual para renderizar dentro de la tarjeta si está cargando
+  const renderValue = (value) => {
+    if (loading) {
+      return <div className="card-mini-spinner"></div>;
+    }
+    return value;
+  };
 
   return (
     <div className="dashboard-layout">
@@ -132,14 +148,14 @@ function Inicio() {
           <div className="dashboard-cards">
             <DashboardCard
               title="Total Productos"
-              value={stats.totalProductos}
+              value={renderValue(stats.totalProductos)}
               subtitle="Items en inventario"
               icon={<Package size={22} />}
             />
 
             <DashboardCard
               title="Total Usuarios"
-              value={stats.totalUsuarios}
+              value={renderValue(stats.totalUsuarios)}
               subtitle="Usuarios registrados"
               icon={<HandHeart size={22} />}
               iconClass="orange"
@@ -148,7 +164,7 @@ function Inicio() {
 
             <DashboardCard
               title="Alertas de Stock"
-              value={stats.stockBajo}
+              value={renderValue(stats.stockBajo)}
               subtitle="Mínimo: 10 unidades"
               icon={<TriangleAlert size={22} />}
               iconClass="red"

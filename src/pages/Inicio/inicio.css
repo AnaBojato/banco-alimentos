@@ -96,6 +96,30 @@
   background:#f3f4f6;
 }
 
+/* ==========================================================================
+   Spinner de carga interno para las tarjetas del Dashboard
+   ========================================================================== */
+
+.card-mini-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #166534; /* Cambia al color primario de tu app si deseas */
+  border-radius: 50%;
+  animation: cardSpin 0.8s linear infinite;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+@keyframes cardSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 @media(max-width:1100px){
   .dashboard-cards{
     grid-template-columns:1fr;
