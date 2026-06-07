@@ -437,9 +437,131 @@
   }
 
   .usuarios-modal {
-    width: 100%;
+    width: 95%;
     max-width: 100%;
-    min-height: 100vh;
-    border-radius: 0;
+    min-height: 15vh;
+    border-radius: 2;
+  }
+}
+
+/* =========================================
+   PAGINACIÓN (BOTONES JUNTOS)
+========================================= */
+
+.usuarios-pagination-container {
+  display: flex;
+  justify-content: center; 
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+  width: 100%;
+}
+
+.usuarios-pagination-block {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+}
+
+.pagination-arrow-btn {
+  background: #f3f4f6;
+  color: #4b5563;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.pagination-arrow-btn:hover:not(:disabled) {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.pagination-arrow-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-numbers {
+  display: flex;
+  gap: 6px;
+}
+
+.pagination-number-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #4b5563;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.pagination-number-btn:hover {
+  border-color: #166534;
+  color: #166534;
+  background: #f0fdf4;
+}
+
+.pagination-number-btn.active {
+  background: #166534;
+  color: white;
+  border-color: #166534;
+}
+
+/* =========================================
+   ESTADOS DE LA TABLA (CARGANDO Y VACÍO)
+========================================= */
+
+.usuarios-table-loading,
+.usuarios-table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  gap: 16px;
+  color: #6b7280;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #166534; /* Color verde corporativo */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 500px) {
+  .usuarios-pagination-block {
+    gap: 6px;
+  }
+  .pagination-arrow-btn {
+    padding: 8px 10px;
+    font-size: 12px;
   }
 }

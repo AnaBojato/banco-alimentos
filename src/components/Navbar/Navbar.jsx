@@ -1,6 +1,4 @@
 import {
-  Bell,
-  CircleHelp,
   Menu,
   Search,
   Users,
@@ -212,7 +210,7 @@ function Navbar({
 
           <input
             type="text"
-            placeholder="Buscar registros..."
+            placeholder="Buscar..."
             className="search-input"
             value={search}
             onChange={(e) =>
@@ -285,10 +283,6 @@ function Navbar({
 
       {/* RIGHT */}
       <div className="topbar-actions">
-
-        <Bell size={18} />
-
-        <CircleHelp size={18} />
 
         {children}
 

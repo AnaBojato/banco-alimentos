@@ -60,11 +60,17 @@ function Usuarios() {
     });
 
   // ============================================
+  // ESTADOS PARA PAGINACIÓN
+  // ============================================
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // ============================================
   // OBTENER USUARIOS
   // ============================================
 
   const fetchUsuarios = async () => {
-
+    setLoading(true); // Activa el cargando antes de la petición
     try {
 
       const response = await api.get(
@@ -81,6 +87,8 @@ function Usuarios() {
 
       console.log(err);
 
+    } finally {
+      setLoading(false); // Desactiva el cargando al finalizar
     }
 
   };
@@ -102,7 +110,7 @@ function Usuarios() {
       setFilteredUsuarios(
         usuarios
       );
-
+      setCurrentPage(1);
       return;
 
     }
@@ -127,8 +135,21 @@ function Usuarios() {
     setFilteredUsuarios(
       filtered
     );
+    setCurrentPage(1);
 
   }, [search, usuarios]);
+
+  // ============================================
+  // LÓGICA DE PAGINACIÓN (CÁLCULOS)
+  // ============================================
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredUsuarios.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredUsuarios.length / itemsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
   // ============================================
   // INPUTS
@@ -352,30 +373,31 @@ function Usuarios() {
 
                 </div>
 
-                {filteredUsuarios.map(
-                  (usuario) => (
-
+                {/* ============================================
+                    CONTROL DE CARGA / DATOS VACÍOS / FILAS
+                   ============================================ */}
+                {loading ? (
+                  <div className="usuarios-table-loading">
+                    <div className="loading-spinner"></div>
+                    <span>Cargando datos...</span>
+                  </div>
+                ) : currentItems.length === 0 ? (
+                  <div className="usuarios-table-empty">
+                    <span>No se encontraron usuarios.</span>
+                  </div>
+                ) : (
+                  currentItems.map((usuario) => (
                     <div
                       className="usuarios-row"
                       key={usuario.id}
                     >
-
                       <div className="usuario-name">
-
                         <div className="usuario-avatar">
-
-                          {usuario.nombre_completo?.charAt(
-                            0
-                          )}
-
+                          {usuario.nombre_completo?.charAt(0)}
                         </div>
-
                         <span>
-                          {
-                            usuario.nombre_completo
-                          }
+                          {usuario.nombre_completo}
                         </span>
-
                       </div>
 
                       <span>
@@ -391,16 +413,50 @@ function Usuarios() {
                       <span>
                         {usuario.telefono}
                       </span>
-
                     </div>
-
-                  )
+                  ))
                 )}
 
               </div>
 
-            </div>
+              {/* ============================================
+                  BOTONERA DE PAGINACIÓN COMPACTA
+                 ============================================ */}
+              {!loading && totalPages > 1 && (
+                <div className="usuarios-pagination-container">
+                  <div className="usuarios-pagination-block">
+                    <button 
+                      onClick={prevPage} 
+                      disabled={currentPage === 1}
+                      className="pagination-arrow-btn"
+                    >
+                      &laquo; Anterior
+                    </button>
+                    
+                    <div className="pagination-numbers">
+                      {Array.from({ length: totalPages }, (_, index) => (
+                        <button
+                          key={index + 1}
+                          onClick={() => paginate(index + 1)}
+                          className={`pagination-number-btn ${currentPage === index + 1 ? 'active' : ''}`}
+                        >
+                          {index + 1}
+                        </button>
+                      ))}
+                    </div>
 
+                    <button 
+                      onClick={nextPage} 
+                      disabled={currentPage === totalPages}
+                      className="pagination-arrow-btn"
+                    >
+                      Siguiente &raquo;
+                    </button>
+                  </div>
+                </div>
+              )}
+
+            </div>
 
           </div>
 
@@ -502,7 +558,7 @@ function Usuarios() {
               <button
                 type="submit"
                 className="save-user-btn"
-                disabled={loading}
+                disabled={loading} // Aquí se usa correctamente para el formulario también
               >
                 {loading ? "Guardando..." : "Guardar Usuario"}
               </button>
