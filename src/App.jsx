@@ -1,3 +1,4 @@
+import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import Welcome from "./pages/Welcome/Welcome";
@@ -38,59 +39,23 @@ const RequireAdmin = ({ children }) => {
   return children;
 };
 
+// Se eliminó la auto-importación errónea de App
 function App() {
   return (
     <Routes>
-
-      <Route
-        path="/"
-        element={<Welcome />}
-      />
-
-      <Route
-        path="/donation"
-        element={<Donation />}
-      />
-
-      <Route
-        path="/login"
-        element={<Login />}
-      />
-
-      <Route
-        path="/inicio"
-        element={<RequireAuth><Inicio /></RequireAuth>}
-      />
-
-      <Route
-        path="/usuarios"
-        element={<RequireAdmin><Usuarios /></RequireAdmin>}
-      />
-
-      <Route
-        path="/profile"
-        element={<RequireAuth><ProfilePage /></RequireAuth>}
-      />
-
-      <Route
-        path="/usuarios"
-        element={<Usuarios />}
-      />
-
-      <Route
-        path="/profile"
-        element={<ProfilePage />}
-      />
-
-      <Route
-        path="/entregas"
-        element={<RequireAuth><Entregas /></RequireAuth>}
-      />
+      <Route path="/" element={<Welcome />} />
+      <Route path="/donation" element={<Donation />} />
+      <Route path="/login" element={<Login />} />
       
-      <Route
-        path="/inventario"
-        element={<RequireAuth><Inventario /></RequireAuth>}
-      />
+      {/* Rutas protegidas */}
+      <Route path="/inicio" element={<RequireAuth><Inicio /></RequireAuth>} />
+      <Route path="/usuarios" element={<RequireAdmin><Usuarios /></RequireAdmin>} />
+      <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
+      <Route path="/entregas" element={<RequireAuth><Entregas /></RequireAuth>} />
+      <Route path="/inventario" element={<RequireAuth><Inventario /></RequireAuth>} />
+
+      {/* Redirección por defecto si la ruta no existe */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
