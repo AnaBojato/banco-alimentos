@@ -261,6 +261,17 @@
   box-sizing: border-box;
   -webkit-appearance: none;
 }
+/* Ocultar las flechas nativas (spin-buttons) en Chrome, Safari, Edge y Opera */
+.cantidad-input::-webkit-outer-spin-button,
+.cantidad-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Ocultar las flechas nativas en Firefox */
+.cantidad-input {
+  -moz-appearance: textfield;
+}
 
 /* Ajuste fino cuando hay un icono al inicio */
 .date-input-wrapper input {
