@@ -18,7 +18,7 @@ import { obtenerProductos } from "../../services/productoService";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Navbar from "../../components/Navbar/Navbar";
-import MobileSidebar from "../../components/MobileSidebar/MobileSidebar";
+import MobileSidebar from "../../components/MobileSideBar/MobileSidebar";
 import ProfileButton from "../../components/ProfileButton/ProfileButton";
 import CustomSelect from "../../components/CustomSelect/CustomSelect";
 
