@@ -4,7 +4,7 @@ import api from "../../api/api";
 import { Mail, Lock, ArrowRight } from "lucide-react";
 import Logo from "../../components/Logo/Logo";
 import BackButton from "../../components/BackButton/BackButton";
-import "../Login/login.css";
+import "../Login/Login.css";
 
 function Login() {
   const navigate = useNavigate(); // ← AGREGADO

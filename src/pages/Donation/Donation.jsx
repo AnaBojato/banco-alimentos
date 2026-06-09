@@ -1,4 +1,4 @@
-import "../Donation/Donation.css";
+import "../Donation/donation.css";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";

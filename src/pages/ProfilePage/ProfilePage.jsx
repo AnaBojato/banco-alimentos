@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
-import MobileSidebar from "../../components/MobileSidebar/MobileSidebar";
+import MobileSidebar from "../../components/MobileSideBar/MobileSidebar";
 import ProfileButton from "../../components/ProfileButton/ProfileButton";
 import Profile from "../../components/Profile/Profile";
 import { logoutService } from "../../services/authService";
