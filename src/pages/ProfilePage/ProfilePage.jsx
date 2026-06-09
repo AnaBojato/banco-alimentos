@@ -9,7 +9,7 @@ import ProfileButton from "../../components/ProfileButton/ProfileButton";
 import Profile from "../../components/Profile/Profile";
 import { logoutService } from "../../services/authService";
 
-import "../ProfilePage/profilepage.css";
+import "../ProfilePage/profilePage.css";
 
 function ProfilePage() {
   const navigate = useNavigate();
