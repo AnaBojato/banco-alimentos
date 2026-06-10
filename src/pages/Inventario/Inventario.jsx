@@ -16,6 +16,12 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import Navbar from "../../components/Navbar/Navbar";
 import MobileSidebar from "../../components/MobileSideBar/MobileSidebar";
 import ProfileButton from "../../components/ProfileButton/ProfileButton";
+import CustomSelect from "../../components/CustomSelect/CustomSelect";
+
+const TIPO_OPTIONS = [
+  { value: "perecedero",    label: "Perecedero" },
+  { value: "no_perecedero", label: "No Perecedero" },
+];
 
 function Inventario() {
 
@@ -522,16 +528,15 @@ function Inventario() {
                 )}
               </div>
 
+              {/* TIPO — usa CustomSelect igual que Usuarios */}
               <div className="inventario-form-group">
                 <label>Tipo</label>
-                <select
+                <CustomSelect
+                  name="tipo"
+                  options={TIPO_OPTIONS}
                   value={tipo}
                   onChange={(e) => setTipo(e.target.value)}
-                >
-                  <option value="">Seleccionar</option>
-                  <option value="perecedero">Perecedero</option>
-                  <option value="no_perecedero">No Perecedero</option>
-                </select>
+                />
                 {errores.tipo && (
                   <span className="inventario-error-text">{errores.tipo}</span>
                 )}
