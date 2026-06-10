@@ -26,6 +26,8 @@ function Donation() {
   const [direccion, setDireccion] = useState("");
 
   const [errores, setErrores] = useState({});
+  const [cargando, setCargando] = useState(false);
+  const [exito, setExito] = useState(false);
 
   const handleSubmit = async () => {
     const nuevosErrores = {};
@@ -48,6 +50,8 @@ function Donation() {
       return;
     }
 
+    setCargando(true);
+
     try {
       const donacionData = {
         producto,
@@ -67,7 +71,8 @@ function Donation() {
       // Llama al servicio que ya modificamos para que use la URL de Render
       await crearDonacion(donacionData);
 
-      alert("Donación registrada correctamente");
+      setExito(true);
+      setTimeout(() => setExito(false), 4000);
 
       // Limpieza de formulario
       setProducto("");
@@ -83,11 +88,32 @@ function Donation() {
     } catch (error) {
       console.error(error);
       alert("Error al registrar la donación");
+
+    } finally {
+
+      setCargando(false);
+
     }
   };
 
   return (
     <div className="donation-page">
+
+      {/* TOAST */}
+      {exito && (
+        <div className="donation-toast">
+          <div className="toast-icon">
+            <Send size={16} />
+          </div>
+          <div>
+            <p className="toast-title">¡Donación registrada!</p>
+            <p className="toast-sub">Gracias por tu generosidad 💚</p>
+          </div>
+          <button className="toast-close" onClick={() => setExito(false)}>×</button>
+        </div>
+      )}
+
+
       {/* HEADER */}
       <header className="donation-header">
         <div className="donation-header-logo">
@@ -151,7 +177,7 @@ function Donation() {
               alt="Vegetales"
             />
             <span className="image-caption">
-              “Gracias por tu generosidad.”
+              "Gracias por tu generosidad."
             </span>
           </div>
         </div>
@@ -261,6 +287,8 @@ function Donation() {
                 setTelefono(soloNumeros);
               }}
             />
+
+ 90f7afe2da8b529eaffc679d251df89ba3d1959a
           </div>
 
           {/* DIRECCION */}
@@ -276,6 +304,20 @@ function Donation() {
           </div>
 
           {/* BOTON */}
+          <button
+            className="submit-donation-btn"
+            onClick={handleSubmit}
+            disabled={cargando}
+          />
+
+            {cargando ? (
+              <span className="btn-spinner" />
+            ) : (
+              <Send size={18} />
+            )}
+
+            {cargando ? "Enviando..." : "Enviar Donación"}
+
           <button className="submit-donation-btn" onClick={handleSubmit}>
             <Send size={18} />
             Enviar Donación

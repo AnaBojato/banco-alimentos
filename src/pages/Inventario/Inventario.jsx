@@ -6,8 +6,6 @@ import { crearDonacion } from "../../services/donationService";
 import {
   Search,
   Gift,
-  Shield,
-  ChevronDown,
   Send,
   X,
 } from "lucide-react";
@@ -58,6 +56,14 @@ function Inventario() {
 
   const [errores, setErrores] =
     useState({});
+
+  const [cargando, setCargando] =
+    useState(false);
+
+  const [exito, setExito] =
+    useState(false);
+
+  // ============================================
   // DATA
   const [inventoryData, setInventoryData] = useState([]);
 
@@ -201,6 +207,8 @@ function Inventario() {
       return;
     }
 
+    setCargando(true);
+
     try {
 
       const donacionData = {
@@ -220,9 +228,10 @@ function Inventario() {
 
       await crearDonacion(donacionData);
 
-      alert(
-        "Donación registrada correctamente"
-      );
+      setModalOpen(false);
+
+      setExito(true);
+      setTimeout(() => setExito(false), 4000);
 
       setProducto("");
       setTipo("");
@@ -233,7 +242,6 @@ function Inventario() {
       setTelefono("");
       setDireccion("");
       setErrores({});
-      setModalOpen(false);
 
       cargarProductos();
 
@@ -241,15 +249,33 @@ function Inventario() {
 
       console.error(error);
 
-      alert(
-        "Error al registrar la donación"
-      );
+      alert("Error al registrar la donación");
+
+    } finally {
+
+      setCargando(false);
+
     }
   };
 
   return (
 
     <div className="inventario-layout">
+
+      {/* TOAST */}
+
+      {exito && (
+        <div className="donation-toast">
+          <div className="toast-icon">
+            <Send size={16} />
+          </div>
+          <div>
+            <p className="toast-title">¡Donación registrada!</p>
+            <p className="toast-sub">Gracias por tu generosidad 💚</p>
+          </div>
+          <button className="toast-close" onClick={() => setExito(false)}>×</button>
+        </div>
+      )}
 
       {/* SIDEBAR */}
 
@@ -396,65 +422,61 @@ function Inventario() {
                 <span>No se encontraron productos registrados.</span>
               </div>
 
-) : (
-                productosPaginados.map((item) => (
-                  <div
-                    className="inventario-row"
-                    key={`${item.name}-${item.type}`}
-                  >
-                    <div className="producto-cell">
-                      <div>
-                        <h4>{item.name}</h4>
-                      </div>
+            ) : (
+              productosPaginados.map((item) => (
+                <div
+                  className="inventario-row"
+                  key={`${item.name}-${item.type}`}
+                >
+                  <div className="producto-cell">
+                    <div>
+                      <h4>{item.name}</h4>
                     </div>
-
-                    <span data-label="Cantidad">
-                      <strong>{item.quantity}</strong> {item.unit}
-                    </span>
-
-                    <span data-label="Tipo">{item.type}</span>
-
-                    <span data-label="Fecha Donación">{item.donationDate}</span>
-
-                    <span data-label="Estado">{getStatusBadge(item.status)}</span>
                   </div>
-                ))
-              )}
+
+                  <span data-label="Cantidad">
+                    <strong>{item.quantity}</strong> {item.unit}
+                  </span>
+
+                  <span data-label="Tipo">{item.type}</span>
+
+                  <span data-label="Fecha Donación">{item.donationDate}</span>
+
+                  <span data-label="Estado">{getStatusBadge(item.status)}</span>
+                </div>
+              ))
+            )}
 
             </div>
 
             {!loadingProductos && totalPaginas > 0 && (
               <div className="inventario-pagination">
                 <button
-                type="button"
-                className="inventario-btn-secondary"
-                disabled={paginaActual === 1}
-                onClick={() =>
-                  setPaginaActual(
-                    paginaActual - 1
-                  )
-                }
-              >
-                Anterior
-              </button>
+                  type="button"
+                  className="inventario-btn-secondary"
+                  disabled={paginaActual === 1}
+                  onClick={() =>
+                    setPaginaActual(paginaActual - 1)
+                  }
+                >
+                  Anterior
+                </button>
 
-              <span className="inventario-pagination-label">
-                Página {paginaActual} de {totalPaginas || 1}
-              </span>
+                <span className="inventario-pagination-label">
+                  Página {paginaActual} de {totalPaginas || 1}
+                </span>
 
-              <button
-                type="button"
-                className="inventario-btn-secondary"
-                disabled={paginaActual === totalPaginas || totalPaginas === 0}
-                onClick={() =>
-                  setPaginaActual(
-                    paginaActual + 1
-                  )
-                }
-              >
-                Siguiente
-              </button>
-            </div>
+                <button
+                  type="button"
+                  className="inventario-btn-secondary"
+                  disabled={paginaActual === totalPaginas || totalPaginas === 0}
+                  onClick={() =>
+                    setPaginaActual(paginaActual + 1)
+                  }
+                >
+                  Siguiente
+                </button>
+              </div>
             )}
 
           </div>
@@ -462,6 +484,8 @@ function Inventario() {
         </div>
 
       </div>
+
+      {/* MODAL */}
 
       {modalOpen && (
         <div
@@ -581,11 +605,18 @@ function Inventario() {
 
               <button
                 type="button"
-                className="inventario-btn-primary inventario-submit-btn"
+                className="inventario-submit-btn"
                 onClick={handleDonacion}
+                disabled={cargando}
               >
-                Registrar Donación
+                {cargando ? (
+                  <span className="inventario-btn-spinner" />
+                ) : (
+                  <Send size={16} />
+                )}
+                {cargando ? "Enviando..." : "Registrar Donación"}
               </button>
+
             </div>
           </div>
         </div>

@@ -16,13 +16,17 @@ import QuickActionCard from "../../components/QuickActionCard/QuickActionCard";
 import MobileSidebar from "../../components/MobileSideBar/MobileSidebar";
 import ProfileButton from "../../components/ProfileButton/ProfileButton";
 import { logoutService } from "../../services/authService";
-import api from "../../api/api";
+import api from "../../api/api"; // ← IMPORTADO: Tu Axios configurado
 
 import "../Inicio/inicio.css";
 
 function Inicio() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // ============================================
+  // ESTADO DE CARGA PARA LAS TARJETAS
+  // ============================================
   const [loading, setLoading] = useState(true);
 
   const [stats, setStats] = useState({
@@ -39,42 +43,15 @@ function Inicio() {
 
   useEffect(() => {
     const cargarDatos = async () => {
-      setLoading(true);
+      setLoading(true); // Iniciamos la carga
       try {
         const productosResponse = await api.get("/productos");
-        const listaProductos = Array.isArray(productosResponse.data)
-          ? productosResponse.data
-          : [];
+        const listaProductos = Array.isArray(productosResponse.data) ? productosResponse.data : [];
 
-        const productosFormateados = listaProductos.map((producto) => ({
-          id: producto.id,
-          name: producto.nombre,
-          quantity: Number(producto.cantidad),
-          type:
-            producto.tipo === "no_perecedero"
-              ? "No Perecedero"
-              : "Perecedero",
-        }));
-
-        const agrupados = Object.values(
-          productosFormateados.reduce((acc, item) => {
-            const key = `${item.name}-${item.type}`;
-
-            if (acc[key]) {
-              acc[key].quantity += item.quantity;
-            } else {
-              acc[key] = { ...item };
-            }
-
-            return acc;
-          }, {})
-        );
-
-        const totalProductos = agrupados.length;
-        const stockBajo = agrupados.filter(
-          (p) => Number(p.quantity) <= 10
+        const totalProductos = listaProductos.length;
+        const stockBajo = listaProductos.filter(
+          (p) => parseFloat(p.cantidad) <= 10
         ).length;
-
         let totalUsuarios = 0;
         try {
           const usuariosResponse = await api.get("/usuarios");
@@ -91,13 +68,12 @@ function Inicio() {
       } catch (error) {
         console.error("⚠️ Error cargando dashboard:", error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Finalizamos la carga pase lo que pase
       }
     };
 
     cargarDatos();
   }, []);
-
   const renderValue = (value) => {
     if (loading) {
       return <div className="card-mini-spinner"></div>;
@@ -127,7 +103,9 @@ function Inicio() {
         <div className="dashboard-content">
           <div className="dashboard-header">
             <div>
-              <h1 className="dashboard-title">Bienvenido al Sistema</h1>
+              <h1 className="dashboard-title">
+                Bienvenido al Sistema
+              </h1>
               <p className="dashboard-subtitle">
                 Panel de control de recursos y logística humanitaria.
               </p>
