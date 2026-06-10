@@ -288,7 +288,6 @@ function Donation() {
               }}
             />
 
- 90f7afe2da8b529eaffc679d251df89ba3d1959a
           </div>
 
           {/* DIRECCION */}
@@ -308,7 +307,7 @@ function Donation() {
             className="submit-donation-btn"
             onClick={handleSubmit}
             disabled={cargando}
-          />
+          >
 
             {cargando ? (
               <span className="btn-spinner" />
@@ -317,10 +316,6 @@ function Donation() {
             )}
 
             {cargando ? "Enviando..." : "Enviar Donación"}
-
-          <button className="submit-donation-btn" onClick={handleSubmit}>
-            <Send size={18} />
-            Enviar Donación
           </button>
         </div>
       </div>

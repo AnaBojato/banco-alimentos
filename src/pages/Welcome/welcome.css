@@ -400,8 +400,16 @@ body{
 
 .help-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(100px,1fr));
-  gap:9px;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+}
+
+@media(max-width:700px){
+
+  .help-grid{
+    grid-template-columns:1fr;
+  }
+
 }
 
 .help-card{
@@ -748,7 +756,7 @@ body{
   }
 
   .welcome-nav{
-    display:none;
+    display:flex;
   }
 
   .hero-content-wrapper{

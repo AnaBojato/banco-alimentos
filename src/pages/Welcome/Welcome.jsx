@@ -40,14 +40,6 @@ function Welcome() {
 
           <nav className="welcome-nav">
 
-            <button className="nav-btn">
-              Nuestra labor
-            </button>
-
-            <button className="nav-btn">
-              Impacto
-            </button>
-
             <button
               className="nav-btn"
               onClick={() => navigate("/login")}
