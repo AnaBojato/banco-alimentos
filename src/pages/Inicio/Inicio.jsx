@@ -17,6 +17,7 @@ import MobileSidebar from "../../components/MobileSideBar/MobileSidebar";
 import ProfileButton from "../../components/ProfileButton/ProfileButton";
 import { logoutService } from "../../services/authService";
 import api from "../../api/api";
+import api from "../../api/api"; // ← IMPORTADO: Tu Axios configurado
 
 import "../Inicio/inicio.css";
 
@@ -75,6 +76,12 @@ function Inicio() {
           (p) => Number(p.quantity) <= 10
         ).length;
 
+        const listaProductos = Array.isArray(productosResponse.data) ? productosResponse.data : [];
+
+        const totalProductos = listaProductos.length;
+        const stockBajo = listaProductos.filter(
+          (p) => parseFloat(p.cantidad) <= 10
+        ).length;
         let totalUsuarios = 0;
         try {
           const usuariosResponse = await api.get("/usuarios");

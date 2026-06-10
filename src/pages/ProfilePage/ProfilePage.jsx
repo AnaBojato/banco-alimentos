@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { Menu } from "lucide-react";
 
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -14,11 +13,8 @@ import "../ProfilePage/profilePage.css";
 function ProfilePage() {
   const navigate = useNavigate();
 
-  const [activeNav, setActiveNav] =
-    useState("perfil");
-
-  const [sidebarOpen, setSidebarOpen] =
-    useState(false);
+  const [activeNav, setActiveNav] = useState("perfil");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="profile-dashboard">
@@ -32,8 +28,8 @@ function ProfilePage() {
 
       {/* MOBILE SIDEBAR */}
       <MobileSidebar
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
         activeNav={activeNav}
         setActiveNav={setActiveNav}
       />
@@ -45,23 +41,17 @@ function ProfilePage() {
           <div className="profile-header-left">
             <button
               className="menu-btn"
-              onClick={() =>
-                setSidebarOpen(true)
-              }
+              onClick={() => setSidebarOpen(true)}
             >
               <Menu size={24} />
             </button>
 
-            <h2>
-              Sistema de Inventario
-            </h2>
+            <h2>Sistema de Inventario</h2>
           </div>
 
           {/* PROFILE DROPDOWN */}
           <ProfileButton
-            onProfileClick={() =>
-              navigate("/profile")
-            }
+            onProfileClick={() => navigate("/profile")}
             onLogout={() => {
               logoutService();
               navigate("/login");

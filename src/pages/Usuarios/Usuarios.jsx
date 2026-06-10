@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-
 import { useNavigate } from "react-router-dom";
-
 import { UserPlus, Search } from "lucide-react";
 
 import api from "../../api/api";
@@ -26,38 +24,23 @@ const ROL_OPTIONS = [
 ];
 
 function Usuarios() {
-
   const navigate = useNavigate();
 
-  const [sidebarOpen, setSidebarOpen] =
-    useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [usuarios, setUsuarios] = useState([]);
+  const [filteredUsuarios, setFilteredUsuarios] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const [usuarios, setUsuarios] =
-    useState([]);
-
-  const [filteredUsuarios, setFilteredUsuarios] =
-    useState([]);
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
-
-  const [search, setSearch] =
-    useState("");
-
-  const [modalOpen, setModalOpen] =
-    useState(false);
-
-  const [formData, setFormData] =
-    useState({
-      nombre_completo: "",
-      correo: "",
-      telefono: "",
-      rol: "voluntario",
-      password: "",
-    });
+  const [formData, setFormData] = useState({
+    nombre_completo: "",
+    correo: "",
+    telefono: "",
+    rol: "voluntario",
+    password: "",
+  });
 
   // ============================================
   // ESTADOS PARA PAGINACIÓN
@@ -68,75 +51,47 @@ function Usuarios() {
   // ============================================
   // OBTENER USUARIOS
   // ============================================
-
   const fetchUsuarios = async () => {
-    setLoading(true); // Activa el cargando antes de la petición
+    setLoading(true); 
     try {
-
-      const response = await api.get(
-        "/api/usuarios"
-      );
-
+      // Ajustado sin el "/api" inicial
+      const response = await api.get("/usuarios");
       setUsuarios(response.data);
-
-      setFilteredUsuarios(
-        response.data
-      );
-
+      setFilteredUsuarios(response.data);
     } catch (err) {
-
       console.log(err);
-
     } finally {
-      setLoading(false); // Desactiva el cargando al finalizar
+      setLoading(false); 
     }
-
   };
 
   useEffect(() => {
-
     fetchUsuarios();
-
   }, []);
 
   // ============================================
   // BUSCADOR
   // ============================================
-
   useEffect(() => {
-
     if (!search.trim()) {
-
-      setFilteredUsuarios(
-        usuarios
-      );
+      setFilteredUsuarios(usuarios);
       setCurrentPage(1);
       return;
-
     }
 
-    const filtered =
-      usuarios.filter((usuario) => {
+    const filtered = usuarios.filter((usuario) => {
+      const text = `
+        ${usuario.nombre_completo}
+        ${usuario.correo}
+        ${usuario.telefono}
+        ${usuario.rol}
+      `.toLowerCase();
 
-        const text =
-          `
-            ${usuario.nombre_completo}
-            ${usuario.correo}
-            ${usuario.telefono}
-            ${usuario.rol}
-          `.toLowerCase();
+      return text.includes(search.toLowerCase());
+    });
 
-        return text.includes(
-          search.toLowerCase()
-        );
-
-      });
-
-    setFilteredUsuarios(
-      filtered
-    );
+    setFilteredUsuarios(filtered);
     setCurrentPage(1);
-
   }, [search, usuarios]);
 
   // ============================================
@@ -154,73 +109,43 @@ function Usuarios() {
   // ============================================
   // INPUTS
   // ============================================
-
   const handleChange = (e) => {
-
-    const {
-      name,
-      value,
-    } = e.target;
-
+    const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
     });
-
   };
 
   // ============================================
   // CREAR USUARIO
   // ============================================
-
   const handleSubmit = async (e) => {
-
     e.preventDefault();
-
     setLoading(true);
-
     setError("");
 
     try {
-
-      let endpoint =
-        "/api/usuarios";
+      // Ajustado sin el "/api" inicial
+      let endpoint = "/usuarios";
 
       let bodyData = {
-        nombre_completo:
-          formData.nombre_completo,
-
-        correo:
-          formData.correo,
-
-        telefono:
-          formData.telefono,
-
-        rol:
-          formData.rol,
+        nombre_completo: formData.nombre_completo,
+        correo: formData.correo,
+        telefono: formData.telefono,
+        rol: formData.rol,
       };
 
       // ====================================
       // ADMIN
       // ====================================
-
-      if (
-        formData.rol ===
-        "administrador"
-      ) {
-
-        endpoint =
-          "/api/auth/registrar";
-
-        bodyData.password =
-          formData.password;
-
+      if (formData.rol === "administrador") {
+        // Ajustado sin el "/api" inicial
+        endpoint = "/auth/registrar";
+        bodyData.password = formData.password;
       }
 
-      await api.post(
-        endpoint,
-        bodyData
-      );
+      await api.post(endpoint, bodyData);
 
       setFormData({
         nombre_completo: "",
@@ -234,150 +159,84 @@ function Usuarios() {
       setModalOpen(false);
 
     } catch (err) {
-
       setError(
-        err.response?.data
-          ?.error ||
-          "Error creando usuario"
+        err.response?.data?.error || "Error creando usuario"
       );
-
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
   return (
-
     <div className="usuarios-layout">
-
       {/* SIDEBAR */}
       <Sidebar />
 
       {/* MOBILE SIDEBAR */}
       <MobileSidebar
         isOpen={sidebarOpen}
-        onClose={() =>
-          setSidebarOpen(false)
-        }
+        onClose={() => setSidebarOpen(false)}
       />
 
       {/* MAIN */}
       <div className="usuarios-main">
-
         {/* NAVBAR */}
-        <Navbar
-          openSidebar={() =>
-            setSidebarOpen(true)
-          }
-        >
+        <Navbar openSidebar={() => setSidebarOpen(true)}>
           <ProfileButton
-            onProfileClick={() =>
-              navigate("/profile")
-            }
-            onLogout={() =>
-              navigate("/login")
-            }
+            onProfileClick={() => navigate("/profile")}
+            onLogout={() => navigate("/login")}
           />
         </Navbar>
 
         {/* CONTENT */}
         <div className="usuarios-content">
-
           {/* HEADER */}
           <div className="usuarios-header">
-
             <div>
-
-              <h1>
-                Gestión de Usuarios
-              </h1>
-
-              <p>
-                Administra los permisos y accesos del personal.
-              </p>
-
+              <h1>Gestión de Usuarios</h1>
+              <p>Administra los permisos y accesos del personal.</p>
             </div>
 
             <button
               type="button"
               className="usuarios-btn-primary"
-              onClick={() =>
-                setModalOpen(true)
-              }
+              onClick={() => setModalOpen(true)}
             >
               <UserPlus size={16} />
               Nuevo Usuario
             </button>
-
           </div>
 
           <div className="usuarios-grid">
-
             {/* TABLA */}
             <div className="usuarios-table-card">
-
               <div className="usuarios-table-header">
-
                 <div className="usuarios-table-title">
-
-                  <h2>
-                    Listado de Personal
-                  </h2>
-
+                  <h2>Listado de Personal</h2>
                   <span className="usuarios-total">
-                    {
-                      filteredUsuarios.length
-                    }{" "}
-                    usuarios
+                    {filteredUsuarios.length} usuarios
                   </span>
-
                 </div>
 
                 <div className="table-search">
-
                   <Search size={15} />
-
                   <input
                     type="text"
                     placeholder="Buscar usuario..."
                     value={search}
-                    onChange={(e) =>
-                      setSearch(e.target.value)
-                    }
+                    onChange={(e) => setSearch(e.target.value)}
                   />
-
                 </div>
-
               </div>
 
               <div className="usuarios-table">
-
                 <div className="usuarios-table-head">
-
-                  <span>
-                    Nombre
-                  </span>
-
-                  <span>
-                    Correo
-                  </span>
-
-                  <span>
-                    Rol
-                  </span>
-
-                  <span>
-                    Teléfono
-                  </span>
-
+                  <span>Nombre</span>
+                  <span>Correo</span>
+                  <span>Rol</span>
+                  <span>Teléfono</span>
                 </div>
 
-                {/* ============================================
-                    CONTROL DE CARGA / DATOS VACÍOS / FILAS
-                   ============================================ */}
                 {loading ? (
                   <div className="usuarios-table-loading">
                     <div className="loading-spinner"></div>
@@ -389,41 +248,27 @@ function Usuarios() {
                   </div>
                 ) : (
                   currentItems.map((usuario) => (
-                    <div
-                      className="usuarios-row"
-                      key={usuario.id}
-                    >
+                    <div className="usuarios-row" key={usuario.id}>
                       <div className="usuario-name">
                         <div className="usuario-avatar">
                           {usuario.nombre_completo?.charAt(0)}
                         </div>
-                        <span>
-                          {usuario.nombre_completo}
-                        </span>
+                        <span>{usuario.nombre_completo}</span>
                       </div>
 
-                      <span>
-                        {usuario.correo}
-                      </span>
+                      <span>{usuario.correo}</span>
 
-                      <span
-                        className={`rol-badge ${usuario.rol}`}
-                      >
+                      <span className={`rol-badge ${usuario.rol}`}>
                         {usuario.rol}
                       </span>
 
-                      <span>
-                        {usuario.telefono}
-                      </span>
+                      <span>{usuario.telefono}</span>
                     </div>
                   ))
                 )}
-
               </div>
 
-              {/* ============================================
-                  BOTONERA DE PAGINACIÓN COMPACTA
-                 ============================================ */}
+              {/* PAGINACIÓN */}
               {!loading && totalPages > 1 && (
                 <div className="usuarios-pagination-container">
                   <div className="usuarios-pagination-block">
@@ -457,44 +302,26 @@ function Usuarios() {
                   </div>
                 </div>
               )}
-
             </div>
-
           </div>
-
         </div>
-
       </div>
 
+      {/* MODAL */}
       {modalOpen && (
-        <div
-          className="usuarios-modal-overlay"
-          onClick={() =>
-            setModalOpen(false)
-          }
-        >
-          <div
-            className="usuarios-modal"
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-          >
+        <div className="usuarios-modal-overlay" onClick={() => setModalOpen(false)}>
+          <div className="usuarios-modal" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
               className="usuarios-modal-close"
-              onClick={() =>
-                setModalOpen(false)
-              }
+              onClick={() => setModalOpen(false)}
             >
               ✕
             </button>
 
             <h2>Nuevo Usuario</h2>
 
-            <form
-              onSubmit={handleSubmit}
-              className="usuarios-form"
-            >
+            <form onSubmit={handleSubmit} className="usuarios-form">
               <div className="form-group">
                 <label>Nombre Completo</label>
                 <input
@@ -560,7 +387,7 @@ function Usuarios() {
               <button
                 type="submit"
                 className="save-user-btn"
-                disabled={loading} // Aquí se usa correctamente para el formulario también
+                disabled={loading}
               >
                 {loading ? "Guardando..." : "Guardar Usuario"}
               </button>
@@ -568,9 +395,7 @@ function Usuarios() {
           </div>
         </div>
       )}
-
     </div>
-
   );
 }
 

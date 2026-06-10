@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ← AGREGADO
+import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
 import { Mail, Lock, ArrowRight } from "lucide-react";
 import Logo from "../../components/Logo/Logo";
@@ -7,7 +7,7 @@ import BackButton from "../../components/BackButton/BackButton";
 import "../Login/Login.css";
 
 function Login() {
-  const navigate = useNavigate(); // ← AGREGADO
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     correo: "",        
@@ -32,18 +32,20 @@ function Login() {
     setError("");
 
     try {
-      // ← CORREGIDO: api.post no recibe method/headers/body, solo url y datos
-      const response = await api.post("/api/auth/login", {
-        correo: formData.correo,   // ← CORREGIDO: era formData.email
+      // Ajustado sin el "/api" inicial porque ya viene en tu VITE_API_URL
+      const response = await api.post("/auth/login", {
+        correo: formData.correo,
         password: formData.password,
       });
 
       const data = response.data;
 
+      // Guardamos los datos de sesión de forma segura
       localStorage.setItem("token", data.token);
-      localStorage.setItem("usuario", JSON.stringify(data.usuario)); // ← AGREGADO
+      localStorage.setItem("usuario", JSON.stringify(data.usuario));
 
-      navigate("/inicio"); // ← CORREGIDO: estaba comentado
+      // Redirigimos al inicio de la app
+      navigate("/inicio");
 
     } catch (err) {
       setError(
@@ -73,10 +75,10 @@ function Login() {
                 <Mail size={18} className="login-input-icon" />
                 <input
                   type="email"
-                  name="correo"         // ← CORREGIDO: era "email"
+                  name="correo"
                   placeholder="ejemplo@foodbank.org"
                   className="login-input"
-                  value={formData.correo} // ← CORREGIDO: era formData.email
+                  value={formData.correo}
                   onChange={handleChange}
                   required
                 />
