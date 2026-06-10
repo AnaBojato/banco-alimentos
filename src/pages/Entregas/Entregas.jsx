@@ -49,9 +49,7 @@ function Entregas() {
     fecha: "",
   });
 
-  // ============================================
-  // AGRUPACIÓN DE PRODUCTOS REPETIDOS (COMO INVENTARIO)
-  // ============================================
+  // AGRUPACIÓN DE PRODUCTOS REPETIDOS 
   const productosAgrupados = useMemo(() => {
     const disponibles = productosRaw.filter(
       (p) => p && p.id && p.nombre && Number(p.cantidad) > 0
@@ -91,9 +89,7 @@ function Entregas() {
     }));
   }, [productosAgrupados]);
 
-  // ============================================
   // CÁLCULO DE 3 DÍAS HÁBILES ANTERIORES PARA EL CALENDARIO
-  // ============================================
   const limitesFecha = useMemo(() => {
     const hoy = new Date();
     
@@ -129,7 +125,8 @@ function Entregas() {
   const cargarEntregas = async () => {
     setLoadingEntregas(true);
     try {
-      const res = await api.get("/api/entregas");
+      // Ajustado sin el "/api" inicial
+      const res = await api.get("/entregas");
       const data = Array.isArray(res.data) ? res.data : [];
       setEntregas(data);
     } catch (err) {
@@ -209,8 +206,8 @@ function Entregas() {
     }
 
     try {
-      // 1. Crear o Registrar Beneficiario
-      const resBeneficiario = await api.post("/api/beneficiarios", {
+      // 1. Crear o Registrar Beneficiario (Ajustado sin el "/api" inicial)
+      const resBeneficiario = await api.post("/beneficiarios", {
         nombre_completo: formData.beneficiario_nombre.trim(),
         telefono: formData.beneficiario_telefono.trim(),
         direccion: formData.beneficiario_direccion.trim(),
@@ -240,8 +237,8 @@ function Entregas() {
         cantidadRestantePorEntregar -= aTomarDeEsteRegistro;
       }
 
-      // 3. Crear el Registro de la Entrega Principal utilizando el ID primario del primer bloque encontrado
-      await api.post("/api/entregas", {
+      // 3. Crear el Registro de la Entrega Principal (Ajustado sin el "/api" inicial)
+      await api.post("/entregas", {
         beneficiario_id: Number(nuevoBeneficiarioId),
         fecha: formData.fecha,
         productos: productosParaEndpoints.map(p => ({
@@ -250,10 +247,10 @@ function Entregas() {
         })),
       });
 
-      // 4. Actualizar stocks individuales concurrentemente en el inventario real
+      // 4. Actualizar stocks individuales (Ajustado sin el "/api" inicial)
       await Promise.all(
         productosParaEndpoints.map(p =>
-          api.put(`/api/productos/${p.producto_id}`, { cantidad: p.nuevaCantidadStock })
+          api.put(`/productos/${p.producto_id}`, { cantidad: p.nuevaCantidadStock })
         )
       );
 

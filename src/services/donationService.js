@@ -1,14 +1,11 @@
-const API_URL = `${import.meta.env.VITE_API_URL}/api/donaciones`;
+const API_URL = `${import.meta.env.VITE_API_URL}/donaciones`; 
 
 export const crearDonacion = async (donacionData) => {
-
   const response = await fetch(`${API_URL}/public`, {
     method: "POST",
-
     headers: {
       "Content-Type": "application/json"
     },
-
     body: JSON.stringify(donacionData)
   });
 

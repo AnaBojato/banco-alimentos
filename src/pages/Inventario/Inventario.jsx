@@ -22,11 +22,7 @@ import ProfileButton from "../../components/ProfileButton/ProfileButton";
 function Inventario() {
 
   const navigate = useNavigate();
-
-  // ============================================
   // UI
-  // ============================================
-
   const [sidebarOpen, setSidebarOpen] =
     useState(false);
 
@@ -62,11 +58,7 @@ function Inventario() {
 
   const [errores, setErrores] =
     useState({});
-
-  // ============================================
   // DATA
-  // ============================================
-
   const [inventoryData, setInventoryData] = useState([]);
 
   const [loadingProductos, setLoadingProductos] = useState(true);
@@ -126,9 +118,7 @@ function Inventario() {
     }
   };
 
-  // ============================================
   // STATUS
-  // ============================================
 
   const getStatusBadge = (status) => {
 

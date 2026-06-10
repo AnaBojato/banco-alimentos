@@ -16,6 +16,7 @@ import QuickActionCard from "../../components/QuickActionCard/QuickActionCard";
 import MobileSidebar from "../../components/MobileSideBar/MobileSidebar";
 import ProfileButton from "../../components/ProfileButton/ProfileButton";
 import { logoutService } from "../../services/authService";
+import api from "../../api/api"; // ← IMPORTADO: Tu Axios configurado
 
 import "../Inicio/inicio.css";
 
@@ -44,46 +45,19 @@ function Inicio() {
     const cargarDatos = async () => {
       setLoading(true); // Iniciamos la carga
       try {
-        const token = localStorage.getItem("token");
-
-        // PRODUCTOS
-        const productosResponse = await fetch(
-          "http://localhost:3000/api/productos",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!productosResponse.ok) {
-          throw new Error("No se pudo conectar al inventario");
-        }
-
-        const productos = await productosResponse.json();
-        const listaProductos = Array.isArray(productos) ? productos : [];
+        const productosResponse = await api.get("/productos");
+        const listaProductos = Array.isArray(productosResponse.data) ? productosResponse.data : [];
 
         const totalProductos = listaProductos.length;
-
         const stockBajo = listaProductos.filter(
           (p) => parseFloat(p.cantidad) <= 10
         ).length;
-
-        // USUARIOS
         let totalUsuarios = 0;
-
-        const usuariosResponse = await fetch(
-          "http://localhost:3000/api/usuarios",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (usuariosResponse.ok) {
-          const usuarios = await usuariosResponse.json();
-          totalUsuarios = usuarios.length;
+        try {
+          const usuariosResponse = await api.get("/usuarios");
+          totalUsuarios = usuariosResponse.data.length;
+        } catch (uError) {
+          console.error("⚠️ Error obteniendo usuarios:", uError);
         }
 
         setStats({
@@ -100,8 +74,6 @@ function Inicio() {
 
     cargarDatos();
   }, []);
-
-  // Pequeño componente visual para renderizar dentro de la tarjeta si está cargando
   const renderValue = (value) => {
     if (loading) {
       return <div className="card-mini-spinner"></div>;
