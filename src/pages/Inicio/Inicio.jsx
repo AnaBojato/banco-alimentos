@@ -16,16 +16,13 @@ import QuickActionCard from "../../components/QuickActionCard/QuickActionCard";
 import MobileSidebar from "../../components/MobileSideBar/MobileSidebar";
 import ProfileButton from "../../components/ProfileButton/ProfileButton";
 import { logoutService } from "../../services/authService";
+import api from "../../api/api";
 
 import "../Inicio/inicio.css";
 
 function Inicio() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
-  // ============================================
-  // ESTADO DE CARGA PARA LAS TARJETAS
-  // ============================================
   const [loading, setLoading] = useState(true);
 
   const [stats, setStats] = useState({
@@ -42,48 +39,48 @@ function Inicio() {
 
   useEffect(() => {
     const cargarDatos = async () => {
-      setLoading(true); // Iniciamos la carga
+      setLoading(true);
       try {
-        const token = localStorage.getItem("token");
+        const productosResponse = await api.get("/productos");
+        const listaProductos = Array.isArray(productosResponse.data)
+          ? productosResponse.data
+          : [];
 
-        // PRODUCTOS
-        const productosResponse = await fetch(
-          "http://localhost:3000/api/productos",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        const productosFormateados = listaProductos.map((producto) => ({
+          id: producto.id,
+          name: producto.nombre,
+          quantity: Number(producto.cantidad),
+          type:
+            producto.tipo === "no_perecedero"
+              ? "No Perecedero"
+              : "Perecedero",
+        }));
+
+        const agrupados = Object.values(
+          productosFormateados.reduce((acc, item) => {
+            const key = `${item.name}-${item.type}`;
+
+            if (acc[key]) {
+              acc[key].quantity += item.quantity;
+            } else {
+              acc[key] = { ...item };
+            }
+
+            return acc;
+          }, {})
         );
 
-        if (!productosResponse.ok) {
-          throw new Error("No se pudo conectar al inventario");
-        }
-
-        const productos = await productosResponse.json();
-        const listaProductos = Array.isArray(productos) ? productos : [];
-
-        const totalProductos = listaProductos.length;
-
-        const stockBajo = listaProductos.filter(
-          (p) => parseFloat(p.cantidad) <= 10
+        const totalProductos = agrupados.length;
+        const stockBajo = agrupados.filter(
+          (p) => Number(p.quantity) <= 10
         ).length;
 
-        // USUARIOS
         let totalUsuarios = 0;
-
-        const usuariosResponse = await fetch(
-          "http://localhost:3000/api/usuarios",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (usuariosResponse.ok) {
-          const usuarios = await usuariosResponse.json();
-          totalUsuarios = usuarios.length;
+        try {
+          const usuariosResponse = await api.get("/usuarios");
+          totalUsuarios = usuariosResponse.data.length;
+        } catch (uError) {
+          console.error("⚠️ Error obteniendo usuarios:", uError);
         }
 
         setStats({
@@ -94,14 +91,13 @@ function Inicio() {
       } catch (error) {
         console.error("⚠️ Error cargando dashboard:", error);
       } finally {
-        setLoading(false); // Finalizamos la carga pase lo que pase
+        setLoading(false);
       }
     };
 
     cargarDatos();
   }, []);
 
-  // Pequeño componente visual para renderizar dentro de la tarjeta si está cargando
   const renderValue = (value) => {
     if (loading) {
       return <div className="card-mini-spinner"></div>;
@@ -131,9 +127,7 @@ function Inicio() {
         <div className="dashboard-content">
           <div className="dashboard-header">
             <div>
-              <h1 className="dashboard-title">
-                Bienvenido al Sistema
-              </h1>
+              <h1 className="dashboard-title">Bienvenido al Sistema</h1>
               <p className="dashboard-subtitle">
                 Panel de control de recursos y logística humanitaria.
               </p>

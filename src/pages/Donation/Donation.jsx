@@ -27,6 +27,8 @@ function Donation() {
   const [direccion, setDireccion] = useState("");
 
   const [errores, setErrores] = useState({});
+  const [cargando, setCargando] = useState(false);
+  const [exito, setExito] = useState(false);
 
   const handleSubmit = async () => {
 
@@ -50,6 +52,8 @@ function Donation() {
       return;
     }
 
+    setCargando(true);
+
     try {
 
       const donacionData = {
@@ -69,7 +73,8 @@ function Donation() {
 
       await crearDonacion(donacionData);
 
-      alert("Donación registrada correctamente");
+      setExito(true);
+      setTimeout(() => setExito(false), 4000);
 
       setProducto("");
       setTipo("");
@@ -88,11 +93,30 @@ function Donation() {
       console.error(error);
 
       alert("Error al registrar la donación");
+
+    } finally {
+
+      setCargando(false);
+
     }
   };
 
   return (
     <div className="donation-page">
+
+      {/* TOAST */}
+      {exito && (
+        <div className="donation-toast">
+          <div className="toast-icon">
+            <Send size={16} />
+          </div>
+          <div>
+            <p className="toast-title">¡Donación registrada!</p>
+            <p className="toast-sub">Gracias por tu generosidad 💚</p>
+          </div>
+          <button className="toast-close" onClick={() => setExito(false)}>×</button>
+        </div>
+      )}
 
       {/* HEADER */}
       <header className="donation-header">
@@ -190,7 +214,7 @@ function Donation() {
             />
 
             <span className="image-caption">
-              “Gracias por tu generosidad.”
+              "Gracias por tu generosidad."
             </span>
 
           </div>
@@ -386,17 +410,15 @@ function Donation() {
             </label>
 
             <input
-                type="text"
-                className="form-input donation-input"
-                placeholder="Ej: 555-1234-555"
-                value={telefono}
-                onChange={(e) => {
-
-                    const soloNumeros = e.target.value.replace(/\D/g, "");
-
-                    setTelefono(soloNumeros);
-                }}
-                />
+              type="text"
+              className="form-input donation-input"
+              placeholder="Ej: 555-1234-555"
+              value={telefono}
+              onChange={(e) => {
+                const soloNumeros = e.target.value.replace(/\D/g, "");
+                setTelefono(soloNumeros);
+              }}
+            />
 
           </div>
 
@@ -421,11 +443,16 @@ function Donation() {
           <button
             className="submit-donation-btn"
             onClick={handleSubmit}
+            disabled={cargando}
           >
 
-            <Send size={18} />
+            {cargando ? (
+              <span className="btn-spinner" />
+            ) : (
+              <Send size={18} />
+            )}
 
-            Enviar Donación
+            {cargando ? "Enviando..." : "Enviar Donación"}
 
           </button>
 

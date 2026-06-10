@@ -269,8 +269,122 @@
   transition: 0.2s;
 }
 
-.submit-donation-btn:hover {
+.submit-donation-btn:hover:not(:disabled) {
   transform: translateY(-2px);
+}
+
+.submit-donation-btn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* SPINNER en botón */
+
+.btn-spinner {
+  display: inline-block;
+
+  width: 18px;
+  height: 18px;
+
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: white;
+
+  border-radius: 50%;
+
+  animation: btn-spin 0.7s linear infinite;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* TOAST */
+
+.donation-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  background: white;
+  border-left: 4px solid #2e7d32;
+  border-radius: 10px;
+
+  padding: 14px 40px 14px 18px;
+
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+
+  min-width: 280px;
+
+  animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.donation-toast .toast-icon {
+  width: 36px;
+  height: 36px;
+
+  border-radius: 50%;
+
+  background: #e8f5e9;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #2e7d32;
+
+  flex-shrink: 0;
+}
+
+.donation-toast .toast-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1b5e20;
+  margin-bottom: 2px;
+}
+
+.donation-toast .toast-sub {
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.toast-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+
+  background: none;
+  border: none;
+
+  font-size: 20px;
+  line-height: 1;
+
+  color: #9ca3af;
+
+  cursor: pointer;
+
+  transition: color 0.15s;
+}
+
+.toast-close:hover {
+  color: #4b5563;
 }
 
 /* RESPONSIVE */
